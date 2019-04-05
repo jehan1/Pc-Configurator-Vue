@@ -1,18 +1,23 @@
 <template>
   <div id="app">
-    <Motherboard/>
-    
+    <Builder v-if="!finished"/>
+    <FinishPage v-else />
   </div>
 </template>
 
 <script>
-import Motherboard from './components/Motherboard.vue'
-import axios from 'axios'
+import Builder from './components/Builder.vue'
+
 
 export default {
   name: 'app',
   components: {
-    Motherboard
+    Builder
+  },
+  data(){
+    return{
+      finished: false
+    }
   }
 }
 

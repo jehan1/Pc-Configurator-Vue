@@ -17,17 +17,50 @@
       </b-dropdown-item>
     </b-dropdown>
   </div>
+
+  <div id="memoryDropdown">
+     <b-dropdown variant="outline-success" v-if="this.currentlySelectedProcessor.id != null"
+                id="dropdown-1" text="Select Memory..." class="m-md-2" :disabled="this.memory.length == 0">
+      <b-dropdown-item v-for="mem in memory" v-bind:key="mem.id"
+                       v-on:click="handleMemClick(mem)">
+        {{ mem.name }}
+      </b-dropdown-item>
+    </b-dropdown>
   </div>
+
+  <div>
+    <b-list-group>
+      <b-list-group-item v-for="mem in selectedMemory" v-bind:key="mem.id">
+        <div class="selected-memory-item">
+          <p id="selected-memory-name">{{ mem.name }}</p>
+          <p id="selected-memory-quantity">Quantity: {{ mem.quantity }}</p>
+          <b-button class="selected-mem-btn" v-on:click="increaseMemQuantity(mem)" variant="success">
+            <fa-icon icon="plus"></fa-icon>
+          </b-button>
+          <b-button class="selected-mem-btn" v-on:click="decreaseMemQuantity(mem)" variant="warning">
+            <fa-icon icon="minus"></fa-icon>
+          </b-button>
+          <b-button class="selected-mem-btn" v-on:click="removeSelectedMem(mem)" variant="outline-danger">Remove</b-button>
+        </div>
+      </b-list-group-item>
+    </b-list-group>
+    
+    <p v-if="this.selectedMemory.length >= 1">Total selected memory size: {{ this.totalMem }} GB</P>
+  </div>
+
+</div>
 </template>
 
 
 <script>
 
 import MotherboardsApi from '../services/api/Motherboards.js';
+import ProcApi from '../services/api/Processor.js';
+import MemApi from '../services/api/Memory.js';
+
 
 export default {
-  name: 'Motherboard',
-
+  name: 'Builder',
 
 data(){
   return {
@@ -35,15 +68,66 @@ data(){
     currentlySelectedMotherboard: { name: 'Select motherboard...'},
 
     processors: [],
-    currentlySelectedProcessor: { name: 'Select processor...' }
+    currentlySelectedProcessor: { name: 'Select processor...' },
+
+    memory: [],
+    selectedMemory: []
   }
 },
+
 methods:{
-  handleMoboClick(mobo){
+  async handleMoboClick(mobo){
+    this.selectedMemory = []; // clearing any existing selected mem
+
     this.currentlySelectedMotherboard = mobo;
+
+    this.processors = await ProcApi.getProcessors(
+      this.currentlySelectedMotherboard.processorSocket.id);
+      console.log(this.processors)
+
+    var apiMem = await MemApi.getMemory(
+      this.currentlySelectedMotherboard.memoryType.id)
+    for (var i = 0; i < apiMem.length; i++) {
+      apiMem[i].quantity = 1;
+    }
+    
+    this.memory = apiMem;
   },
   handleProcClick(proc){
-      this.currentlySelectedProcessor = proc;
+    this.currentlySelectedProcessor = proc;
+  }, 
+  handleMemClick(mem) {
+    if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory) {
+      alert('NO MORE NEW MEMORY ALLOWED, SIZE EXCEEDED')
+    }
+    else {
+      this.selectedMemory.push(mem);
+      this.memory = this.memory.filter((memory) => {
+        return mem.id != memory.id
+      });
+    }
+  },
+  removeSelectedMem(mem) {
+    this.memory.push(mem);
+    this.selectedMemory = this.selectedMemory.filter((memory) => {
+      return mem.id != memory.id
+   });
+  },
+  increaseMemQuantity(mem) {
+    if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory) {
+      alert('NO MORE MEMORY QUANTITY ALLOWED!');
+    }
+    else {
+      mem.quantity++;
+    }
+  },
+  decreaseMemQuantity(mem) {
+    if (mem.quantity == 1) {
+      alert('QUANTITY CANNOT BE LESS THAN 1!');
+    }
+    else {
+      mem.quantity--;
+    }
   }
 },
 async mounted() {
@@ -54,11 +138,23 @@ async mounted() {
       console.log('server-down');
     }
 
-}
+  },
+  computed: {
+    totalMem() {
+      var value = 0;
+      for (var i = 0; i < this.selectedMemory.length; i++) {
+        value += this.selectedMemory[i].capacity * this.selectedMemory[i].quantity;
+      }
+
+      return value;
+    },
+  
+  }
+
 }
 </script>
 
-<style scoped>
+<style  scoped>
 h3 {
   margin: 40px 0 0;
 }
@@ -75,6 +171,33 @@ a {
 }
 
 #processorDropdown {
-  margin: 10px 0px 0px 0px;
+  margin: 20px 0px 0px 0px;
+}
+
+#memoryDropdown{
+
+  margin: 10px 20px 10px 10px;
+  cursor: pointer;
+}
+
+.selected-memory-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center
+}
+
+#selected-memory-name {
+  vertical-align: middle;
+  margin-bottom: 0
+}
+
+#selected-memory-quantity {
+  width: 80px;
+  margin: 0px 20px 0px 20px
+}
+
+.selected-mem-btn {
+  margin:  0px 10px 0px 0px;
 }
 </style>

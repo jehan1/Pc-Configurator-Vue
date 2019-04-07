@@ -56,6 +56,15 @@
       </b-dropdown-item>
     </b-dropdown>
   </div>
+   <div id="GraphicsCardDropdown">
+      <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null "
+                id="dropdown-2" :text="currentlySelectedGcard.name" class="m-md-2">
+      <b-dropdown-item v-for=" gCard in graphicsCard" v-bind:key="gCard.id"
+                       v-on:click="handleGcardClick(gCard)">
+        {{ gCard.name}}
+      </b-dropdown-item>
+    </b-dropdown>
+  </div>
 
 </div>
 </template>
@@ -67,6 +76,7 @@ import MotherboardsApi from '../services/api/Motherboards.js';
 import ProcApi from '../services/api/Processor.js';
 import MemApi from '../services/api/Memory.js';
 import CaseApi from '../services/api/Case.js';
+import GcardApi from '../services/api/GraphicsCard.js';
 
 
 export default {
@@ -86,6 +96,11 @@ data(){
 
     Case: [],
     currentlySelectedCase: { name: 'Select The Case...' },
+
+    graphicsCard: [],
+    currentlySelectedGcard: { name: 'Select The Graphics Card...' },
+    
+     PciLaneId:[]
   }
 },
 
@@ -94,6 +109,7 @@ methods:{
     this.selectedMemory = []; // clearing any existing selected mem
     this.currentlySelectedProcessor= { name: 'Select processor...' }; // clearing any existing selected proc
     this.currentlySelectedCase = { name: 'Select The Case...' } // clearing any existing selected Case
+    this.totalQuantity = 0;
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -109,6 +125,19 @@ methods:{
     this.memory = apiMem;
 
     this.Case = await CaseApi.getCase(this.currentlySelectedMotherboard.caseSize.size)
+    
+    this.getPciLaneId()
+    
+    for (var i = 0; i < this.PciLaneId.length; i++) {
+
+     var gCards = await GcardApi.getGrCard(this.PciLaneId[i])
+      for(var j = 0 ; j < gCards.length; j++ ){
+              this.graphicsCard.push(gCards[j])
+        }
+
+    }
+
+
   },
   handleProcClick(proc){
     this.currentlySelectedProcessor = proc;
@@ -155,9 +184,19 @@ methods:{
   },
   handleCaseClick(c){
     this.currentlySelectedCase= c ;
+  },
+  handleGcardClick(gCard){
+    this.currentlySelectedGcard= gCard;
+  },
+  getPciLaneId(){
+    
+    let temp = this.currentlySelectedMotherboard.pciLanes
+    for(var i = 0; i < temp.length ; i++){
+      this.PciLaneId.push(temp[i].id.pciLaneId)
+    }
   }
 },
-async mounted() {
+  async mounted() {
     try {
       this.motherboard = await MotherboardsApi.getAllMotherboards();
     }
@@ -198,6 +237,7 @@ a {
 
 #processorDropdown {
   margin: 20px 0px 0px 0px;
+  cursor: pointer;
 }
 
 #memoryDropdown{
@@ -225,5 +265,14 @@ a {
 
 .selected-mem-btn {
   margin:  0px 10px 0px 0px;
+}
+#CaseDropdown{
+  margin: 20px 0px 0px 10px;
+  cursor: pointer;
+}
+
+#GraphicsCardDropdown{
+  margin: 20px 0px 0px 0px;
+  cursor: pointer;
 }
 </style>

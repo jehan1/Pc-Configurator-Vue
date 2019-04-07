@@ -30,7 +30,7 @@
 
   <div>
     <b-list-group>
-      <b-list-group-item v-for="mem in selectedMemory" v-bind:key="mem.id">
+      <b-list-group-item v-for="mem in selectedMemory" v-bind:key="mem.id" >
         <div class="selected-memory-item">
           <p id="selected-memory-name">{{ mem.name }}</p>
           <p id="selected-memory-quantity">Quantity: {{ mem.quantity }}</p>
@@ -47,6 +47,15 @@
     
     <p v-if="this.selectedMemory.length >= 1">Total selected memory size: {{ this.totalMem }} GB</P>
   </div>
+  <div id="CaseDropdown">
+      <b-dropdown variant="outline-success" v-if="selectedMemory.length >= 1 "
+                id="dropdown-1" :text="currentlySelectedCase.name" class="m-md-2">
+      <b-dropdown-item v-for=" c in Case" v-bind:key="c.id"
+                       v-on:click="handleCaseClick(c)">
+        {{ c.name}}
+      </b-dropdown-item>
+    </b-dropdown>
+  </div>
 
 </div>
 </template>
@@ -57,6 +66,7 @@
 import MotherboardsApi from '../services/api/Motherboards.js';
 import ProcApi from '../services/api/Processor.js';
 import MemApi from '../services/api/Memory.js';
+import CaseApi from '../services/api/Case.js';
 
 
 export default {
@@ -71,13 +81,19 @@ data(){
     currentlySelectedProcessor: { name: 'Select processor...' },
 
     memory: [],
-    selectedMemory: []
+    selectedMemory: [],
+    totalQuantity:0,
+
+    Case: [],
+    currentlySelectedCase: { name: 'Select The Case...' },
   }
 },
 
 methods:{
   async handleMoboClick(mobo){
     this.selectedMemory = []; // clearing any existing selected mem
+    this.currentlySelectedProcessor= { name: 'Select processor...' }; // clearing any existing selected proc
+    this.currentlySelectedCase = { name: 'Select The Case...' } // clearing any existing selected Case
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -90,14 +106,17 @@ methods:{
     for (var i = 0; i < apiMem.length; i++) {
       apiMem[i].quantity = 1;
     }
-    
     this.memory = apiMem;
+
+    this.Case = await CaseApi.getCase(this.currentlySelectedMotherboard.caseSize.size)
   },
   handleProcClick(proc){
     this.currentlySelectedProcessor = proc;
   }, 
   handleMemClick(mem) {
-    if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory) {
+    this.totalQuantity++;
+    if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory||
+        this.totalQuantity   >= this.currentlySelectedMotherboard.noMemoryPorts) {
       alert('NO MORE NEW MEMORY ALLOWED, SIZE EXCEEDED')
     }
     else {
@@ -114,11 +133,15 @@ methods:{
    });
   },
   increaseMemQuantity(mem) {
-    if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory) {
+    if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory ||
+        this.totalQuantity >= this.currentlySelectedMotherboard.noMemoryPorts) {
       alert('NO MORE MEMORY QUANTITY ALLOWED!');
+      
     }
     else {
       mem.quantity++;
+      this.totalQuantity++;
+      console.log(this.totalQuantity)
     }
   },
   decreaseMemQuantity(mem) {
@@ -127,7 +150,11 @@ methods:{
     }
     else {
       mem.quantity--;
+      this.totalQuantity--;
     }
+  },
+  handleCaseClick(c){
+    this.currentlySelectedCase= c ;
   }
 },
 async mounted() {
@@ -148,7 +175,6 @@ async mounted() {
 
       return value;
     },
-  
   }
 
 }

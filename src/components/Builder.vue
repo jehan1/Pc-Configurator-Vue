@@ -77,6 +77,34 @@
           <b-button class="selected-GraphicsCard-btn" v-on:click="decreasegCardQuantity(selectedGraphicsCard)" variant="warning">
             <fa-icon icon="minus"></fa-icon>
           </b-button>
+          <b-button class="selected-mon-btn" v-on:click="removeSelectedgCard(selectedGraphicsCard)" variant="outline-danger">Remove</b-button>
+        </div>
+      </b-list-group-item>
+    </b-list-group>
+  </div>
+  <div id="monitorDropdown">
+     <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null"
+                id="dropdown-1" text="Select Monitors..." class="m-md-2" :disabled="this.monitors.length == 0">
+      <b-dropdown-item v-for="mon in monitors" v-bind:key="mon.id"
+                       v-on:click="handleMonClick(mon)">
+        {{ mon.name }}
+      </b-dropdown-item>
+    </b-dropdown>
+  </div>
+
+  <div>
+    <b-list-group>
+      <b-list-group-item v-for="mon in selectedMonitors" v-bind:key="mon.id" >
+        <div class="selected-Monitors-item">
+          <p id="selected-Monitors-name">{{ mon.name }}</p>
+          <p id="selected-Monitors-quantity">Quantity: {{ mon.quantity }}</p>
+          <b-button class="selected-mon-btn" v-on:click="increaseMonQuantity(mon)" variant="success">
+            <fa-icon icon="plus"></fa-icon>
+          </b-button>
+          <b-button class="selected-mon-btn" v-on:click="decreaseMonQuantity(mon)" variant="warning">
+            <fa-icon icon="minus"></fa-icon>
+          </b-button>
+          <b-button class="selected-mon-btn" v-on:click="removeSelectedMon(mon)" variant="outline-danger">Remove</b-button>
         </div>
       </b-list-group-item>
     </b-list-group>
@@ -117,9 +145,14 @@ data(){
     selectedGraphicsCard:{ name: 'Select The Graphics Card...' },
     PciLaneId:[],
     totalGcardQuantity: 0,
+    
 
-    Monitors:[],
-    videoPorts:[]
+    monitors:[],
+    selectedMonitors:[],
+    motherboardVideoPorts:[],
+    graphicsVideoPorts:[],
+    monitorId: [],
+    totalMonitors: 0
   }
 },
 
@@ -129,9 +162,11 @@ methods:{
     this.currentlySelectedProcessor= { name: 'Select processor...' }; // clearing any existing selected proc
     this.currentlySelectedCase = { name: 'Select The Case...' } // clearing any existing selected Case
     this.totalQuantity = 0;
-    this.currentlySelectedGcard = { name: 'Select The Graphics Card...' };
     this.graphicsCard = [];
     this.selectedGraphicsCard = { name: 'Select The Graphics Card...' },
+    this.selectedMonitors = [];
+    this.monitors = [];
+    this.motherboardVideoPorts =[],
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -150,6 +185,7 @@ methods:{
     
     this.getPciLaneId()
     
+    
     for (var i = 0; i < this.PciLaneId.length; i++) {
 
      var gCards = await GcardApi.getGrCard(this.PciLaneId[i])
@@ -157,17 +193,22 @@ methods:{
               this.graphicsCard.push(gCards[j])
       }
     }
+
+    this.getOnBoardMonitors()
+    
+    
   },
   handleProcClick(proc){
     this.currentlySelectedProcessor = proc;
   }, 
   handleMemClick(mem) {
-    this.totalQuantity++;
+    
     if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory||
         this.totalQuantity   >= this.currentlySelectedMotherboard.noMemoryPorts) {
       alert('NO MORE NEW MEMORY ALLOWED, SIZE EXCEEDED')
     }
     else {
+      this.totalQuantity++;
       this.selectedMemory.push(mem);
       this.memory = this.memory.filter((memory) => {
         return mem.id != memory.id
@@ -176,9 +217,13 @@ methods:{
   },
   removeSelectedMem(mem) {
     this.memory.push(mem);
+    console.log(mem.quantity)
+    this.totalQuantity = this.totalQuantity - mem.quantity
+    console.log(this.totalQuantity)
     this.selectedMemory = this.selectedMemory.filter((memory) => {
       return mem.id != memory.id
    });
+   
   },
   increaseMemQuantity(mem) {
     if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory ||
@@ -188,8 +233,9 @@ methods:{
     }
     else {
       mem.quantity++;
-      this.totalQuantity++;
       console.log(this.totalQuantity)
+      this.totalQuantity++;
+      
     }
   },
   decreaseMemQuantity(mem) {
@@ -199,6 +245,7 @@ methods:{
     else {
       mem.quantity--;
       this.totalQuantity--;
+      console.log(this.totalQuantity)
     }
   },
   handleCaseClick(c){
@@ -209,6 +256,9 @@ methods:{
     this.selectedGraphicsCard= null
     this.totalGcardQuantity++;
     this.selectedGraphicsCard = gCard;
+    
+    
+    this.getGraphicsCardMonitors();
 
   },
   getPciLaneId(){
@@ -218,6 +268,8 @@ methods:{
     for(var i = 0; i < temp.length ; i++){
       this.PciLaneId.push(temp[i].id.pciLaneId)
     }
+
+    
   },
   increasegCardQuantity(selectedGraphicsCard){
     let temp = this.currentlySelectedMotherboard.pciLanes
@@ -241,8 +293,111 @@ methods:{
     else {
       this.totalGcardQuantity--;
     }
-  }
-},
+  },
+  removeSelectedgCard(selectedGraphicsCard){
+    this.selectedGraphicsCard = { name: 'Select The Graphics Card...' }
+  },
+
+  async getGraphicsCardMonitors(){
+    
+    this.graphicsVideoPorts = []
+    this.monitors = []
+    this.monitorId = []
+
+    let temp = this.selectedGraphicsCard.videoPorts
+      for(var i = 0; i < temp.length ; i++){
+        this.graphicsVideoPorts.push(temp[i].id.videoPortsId)
+    }
+    this.monitors = []
+    for (var i = 0; i < this.graphicsVideoPorts.length; i++) {
+
+      var mon = await MonApi.getMonitors(this.graphicsVideoPorts[i])
+      for(var j = 0 ; j < mon.length; j++ ){
+        if(this.monitors.length < 1){
+            this.monitors.push(mon[j])
+            this.monitorId.push(mon[j].id)
+        }
+        else{ 
+          if( !this.monitorId.includes(mon[j].id) ){
+          this.monitors.push(mon[j])
+          this.monitorId.push(mon[j].id)
+          }   
+        }
+      }
+    }
+  },
+  
+  async getOnBoardMonitors(){
+    this.monitors = []
+    this.monitorId = []
+    this.motherboardVideoPorts = []
+
+    let temp = this.currentlySelectedMotherboard.videoPorts
+      for(var i = 0; i < temp.length ; i++){
+        this.motherboardVideoPorts.push(temp[i].id.videoPortsId)
+      }
+    for (var i = 0; i < this.motherboardVideoPorts.length; i++) {
+
+      var mon = await MonApi.getMonitors(this.motherboardVideoPorts[i])
+      for(var j = 0 ; j < mon.length; j++ ){
+        if(this.monitors.length < 1){
+            this.monitors.push(mon[j])
+            this.monitorId.push(mon[j].id)
+        }
+        else{ 
+          if( !this.monitorId.includes(mon[j].id) ){
+          this.monitors.push(mon[j])
+          this.monitorId.push(mon[j].id)
+          }   
+        }
+      }
+    }
+  },
+  handleMonClick(mon){
+    
+    if(!this.motherboardVideoPorts.length < 1 && 
+      this.totalMotherboardVideoPorts >= this.totalMonitors){
+        this.totalMonitors++;
+        this.selectedMonitors.push(mon)
+        this.monitors = this.monitors.filter((monitors) => {
+          return mon.id != monitors.id
+        });
+      
+    }
+      else{
+        if(!this.totalGraphicsCardVideoPorts< 1 && 
+          this.totalGraphicsCardVideoPorts >= this.totalMonitors){
+            this.totalMonitors++;
+            this.selectedMonitors.push(mon)
+            this.monitors = this.monitors.filter((monitors) => {
+              return mon.id != monitors.id
+            });
+          
+        }
+      }
+   },
+   removeSelectedMon(mon) {
+    this.monitors.push(mon);
+    this.selectedMonitors = this.selectedMonitors.filter((monitors) => {
+      return mon.id != monitors.id
+      });
+   },
+   increaseMonQuantity(){
+     if(!this.motherboardVideoPorts.length < 1 && 
+      this.totalMotherboardVideoPorts >= this.totalMonitors){
+        this.totalMonitors++;
+      }
+      else if (!this.totalGraphicsCardVideoPorts< 1 && 
+          this.totalGraphicsCardVideoPorts >= this.totalMonitors){
+            this.totalMonitors++;
+        }
+      
+      else { 
+        alert('Cannot add more monitors, the maximum allowed content exceeded')
+      }
+    }
+   
+  },
   async mounted() {
     try {
       this.motherboard = await MotherboardsApi.getAllMotherboards();
@@ -261,9 +416,26 @@ methods:{
 
       return value;
     },
-  }
-
+    totalMotherboardVideoPorts(){
+      var totalMobVideoPorts = 0;
+      let temp = this.currentlySelectedMotherboard.videoPorts
+      for (var i = 0; i < temp.length; i++) {
+        totalMobVideoPorts += temp[i].quantity
+      }
+      return totalMobVideoPorts
+    },
+    totalGraphicsCardVideoPorts(){
+      var totalGraVideoPorts = 0;
+      let temp = this.selectedGraphicsCard.videoPorts
+      
+      for (var i = 0; i < temp.length; i++) {
+        totalGraVideoPorts += temp[i].quantity
+        }
+      return  totalGraVideoPorts
+    } 
+  } 
 }
+
 </script>
 
 <style  scoped>
@@ -297,7 +469,8 @@ a {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center
+  justify-content: center;
+  cursor: pointer;
 }
 
 #selected-memory-name {
@@ -307,11 +480,13 @@ a {
 
 #selected-memory-quantity {
   width: 80px;
-  margin: 0px 20px 0px 20px
+  margin: 0px 20px 0px 20px;
+  cursor: pointer;
 }
 
 .selected-mem-btn {
   margin:  0px 10px 0px 0px;
+  cursor: pointer;
 }
 #CaseDropdown{
   margin: 20px 0px 0px 10px;
@@ -319,7 +494,7 @@ a {
 }
 
 #GraphicsCardDropdown{
-  margin: 20px 0px 0px 0px;
+  margin: 20px 0px 10px 10px;
   cursor: pointer;
 }
 .selected-GraphicsCard-item {

@@ -34,7 +34,7 @@
         <div class="selected-memory-item">
           <p id="selected-memory-name">{{ mem.name }}</p>
           <p id="selected-memory-quantity">Quantity: {{ mem.quantity }}</p>
-          <b-button class="selected-mem-btn" v-on:click="increaseMemQuantity(mem)" variant="success">
+          <b-button class="selected-mem-btn" @click="increaseMemQuantity(mem)" variant="success">
             <fa-icon icon="plus"></fa-icon>
           </b-button>
           <b-button class="selected-mem-btn" v-on:click="decreaseMemQuantity(mem)" variant="warning">
@@ -217,9 +217,7 @@ methods:{
   },
   removeSelectedMem(mem) {
     this.memory.push(mem);
-    console.log(mem.quantity)
     this.totalQuantity = this.totalQuantity - mem.quantity
-    console.log(this.totalQuantity)
     this.selectedMemory = this.selectedMemory.filter((memory) => {
       return mem.id != memory.id
    });
@@ -233,7 +231,6 @@ methods:{
     }
     else {
       mem.quantity++;
-      console.log(this.totalQuantity)
       this.totalQuantity++;
       
     }
@@ -245,7 +242,6 @@ methods:{
     else {
       mem.quantity--;
       this.totalQuantity--;
-      console.log(this.totalQuantity)
     }
   },
   handleCaseClick(c){
@@ -256,6 +252,7 @@ methods:{
     this.selectedGraphicsCard= null
     this.totalGcardQuantity++;
     this.selectedGraphicsCard = gCard;
+    
     
     
     this.getGraphicsCardMonitors();
@@ -273,7 +270,6 @@ methods:{
   },
   increasegCardQuantity(selectedGraphicsCard){
     let temp = this.currentlySelectedMotherboard.pciLanes
-    console.log(temp)
     for(var i = 0; i < temp.length ; i++){
       if(this.selectedGraphicsCard.pciLanes.id ==
           temp[i].id.pciLaneId){
@@ -303,6 +299,9 @@ methods:{
     this.graphicsVideoPorts = []
     this.monitors = []
     this.monitorId = []
+    this.selectedMonitors = []
+    this.motherboardVideoPorts =[]
+    this.totalMonitors = 0
 
     let temp = this.selectedGraphicsCard.videoPorts
       for(var i = 0; i < temp.length ; i++){
@@ -316,11 +315,13 @@ methods:{
         if(this.monitors.length < 1){
             this.monitors.push(mon[j])
             this.monitorId.push(mon[j].id)
+            mon[j].quantity = 1;
         }
         else{ 
           if( !this.monitorId.includes(mon[j].id) ){
           this.monitors.push(mon[j])
           this.monitorId.push(mon[j].id)
+          mon[j].quantity = 1;
           }   
         }
       }
@@ -331,23 +332,26 @@ methods:{
     this.monitors = []
     this.monitorId = []
     this.motherboardVideoPorts = []
+    this.totalMonitors = 0
 
     let temp = this.currentlySelectedMotherboard.videoPorts
       for(var i = 0; i < temp.length ; i++){
         this.motherboardVideoPorts.push(temp[i].id.videoPortsId)
       }
-    for (var i = 0; i < this.motherboardVideoPorts.length; i++) {
+      for (var i = 0; i < this.motherboardVideoPorts.length; i++) {
 
       var mon = await MonApi.getMonitors(this.motherboardVideoPorts[i])
       for(var j = 0 ; j < mon.length; j++ ){
         if(this.monitors.length < 1){
             this.monitors.push(mon[j])
             this.monitorId.push(mon[j].id)
+            mon[j].quantity = 1;
         }
         else{ 
           if( !this.monitorId.includes(mon[j].id) ){
           this.monitors.push(mon[j])
           this.monitorId.push(mon[j].id)
+          mon[j].quantity = 1;
           }   
         }
       }
@@ -355,46 +359,65 @@ methods:{
   },
   handleMonClick(mon){
     
-    if(!this.motherboardVideoPorts.length < 1 && 
+    if(this.motherboardVideoPorts.length > 1 && 
       this.totalMotherboardVideoPorts >= this.totalMonitors){
         this.totalMonitors++;
+        
         this.selectedMonitors.push(mon)
         this.monitors = this.monitors.filter((monitors) => {
           return mon.id != monitors.id
         });
       
     }
-      else{
-        if(!this.totalGraphicsCardVideoPorts< 1 && 
+      else if(this.graphicsVideoPorts.length > 1 && 
           this.totalGraphicsCardVideoPorts >= this.totalMonitors){
             this.totalMonitors++;
+            
             this.selectedMonitors.push(mon)
             this.monitors = this.monitors.filter((monitors) => {
               return mon.id != monitors.id
             });
-          
-        }
+      }
+      else{
+        alert('Cannot add more monitors a annot add more monitors, the maximum allowed quantity exceeded')
       }
    },
    removeSelectedMon(mon) {
     this.monitors.push(mon);
+    this.totalMonitors = this.totalMonitors - mon.quantity
     this.selectedMonitors = this.selectedMonitors.filter((monitors) => {
       return mon.id != monitors.id
       });
    },
-   increaseMonQuantity(){
-     if(!this.motherboardVideoPorts.length < 1 && 
-      this.totalMotherboardVideoPorts >= this.totalMonitors){
+   increaseMonQuantity(mon){
+     if(this.motherboardVideoPorts.length > 1 && 
+      this.totalMotherboardVideoPorts > this.totalMonitors){
+        
+        mon.quantity++
+        console.log(mon.quantity)
         this.totalMonitors++;
+        
       }
-      else if (!this.totalGraphicsCardVideoPorts< 1 && 
-          this.totalGraphicsCardVideoPorts >= this.totalMonitors){
+      else if (this.graphicsVideoPorts.length> 1 && 
+          this.totalGraphicsCardVideoPorts > this.totalMonitors){
+            mon.quantity++
             this.totalMonitors++;
+            
         }
       
       else { 
-        alert('Cannot add more monitors, the maximum allowed content exceeded')
+        alert('Cannot add more monitors, the maximum allowed quantity exceeded')
       }
+    },
+    decreaseMonQuantity(mon){
+      console.log(mon.quantity)
+      if(!mon.quantity == 1 ){
+        mon.quantity--;
+        this.totalMonitors--;  
+      }
+      else { 
+        alert('Cannot decrease less than 1')
+      }  
     }
    
   },
@@ -517,8 +540,34 @@ a {
 .selected-GraphicsCard-btn {
   margin:  0px 10px 0px 0px;
 }
-#CaseDropdown{
-  margin: 20px 0px 0px 10px;
+
+#monitorDropdown{
+
+  margin: 10px 20px 10px 10px;
+  cursor: pointer;
+}
+
+.selected-Monitors-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#selected-Monitors-name {
+  vertical-align: middle;
+  margin-bottom: 0
+}
+
+#selected-Monitors-quantity {
+  width: 80px;
+  margin: 0px 20px 0px 20px;
+  cursor: pointer;
+}
+
+.selected-mon-btn {
+  margin:  0px 10px 0px 0px;
   cursor: pointer;
 }
 </style>

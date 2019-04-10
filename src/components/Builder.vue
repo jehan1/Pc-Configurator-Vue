@@ -47,6 +47,36 @@
     
     <p v-if="this.selectedMemory.length >= 1">Total selected memory size: {{ this.totalMem }} GB</P>
   </div>
+  <div id="storageDropdown">
+     <b-dropdown variant="outline-success" v-if="this.selectedMemory.length >= 1 "
+                id="dropdown-1" text="Select Storage Drive..." class="m-md-2" :disabled="this.storage.length == 0">
+      <b-dropdown-item v-for="st in storage" v-bind:key="st.id"
+                       v-on:click="handleStClick(st)">
+        {{ st.name }}
+      </b-dropdown-item>
+      <b-dropdown-divider  > 
+      
+      </b-dropdown-divider>
+    </b-dropdown>
+  </div>
+
+  <div>
+    <b-list-group>
+      <b-list-group-item v-for="st in selectedSt" v-bind:key="st.id" >
+        <div class="selected-storage-item">
+          <p id="selected-storage-name">{{ st.name }}</p>
+          <p id="selected-storage-quantity">Quantity: {{ st.quantity }}</p>
+          <b-button class="selected-storage-btn" @click="increaseStQuantity(st)" variant="success">
+            <fa-icon icon="plus"></fa-icon>
+          </b-button>
+          <b-button class="selected-storage-btn" v-on:click="decreaseStQuantity(st)" variant="warning">
+            <fa-icon icon="minus"></fa-icon>
+          </b-button>
+          <b-button class="selected-storage-btn" v-on:click="removeSelectedSt(st)" variant="outline-danger">Remove</b-button>
+        </div>
+      </b-list-group-item>
+    </b-list-group>
+  </div>
   <div id="CaseDropdown">
       <b-dropdown variant="outline-success" v-if="selectedMemory.length >= 1 "
                 id="dropdown-1" :text="currentlySelectedCase.name" class="m-md-2">
@@ -121,6 +151,7 @@ import MemApi from '../services/api/Memory.js';
 import CaseApi from '../services/api/Case.js';
 import GcardApi from '../services/api/GraphicsCard.js';
 import MonApi from '../services/api/Monitors.js';
+import StorageApi from '../services/api/Storage.js';
 
 
 export default {
@@ -145,6 +176,10 @@ data(){
     selectedGraphicsCard:{ name: 'Select The Graphics Card...' },
     PciLaneId:[],
     totalGcardQuantity: 0,
+
+    storage: [],
+    selectedSt: [],
+    totalStorage: 0,
     
 
     monitors:[],
@@ -167,6 +202,7 @@ methods:{
     this.selectedMonitors = [];
     this.monitors = [];
     this.motherboardVideoPorts =[],
+    this.selectedSt= [],
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -180,6 +216,12 @@ methods:{
       apiMem[i].quantity = 1;
     }
     this.memory = apiMem;
+
+    var apiSto = await StorageApi.getStorageDrive()
+    for (var i = 0; i < apiSto.length; i++) {
+      apiSto[i].quantity = 1;
+    }
+    this.storage = apiSto;
 
     this.Case = await CaseApi.getCase(this.currentlySelectedMotherboard.caseSize.size)
     
@@ -243,6 +285,43 @@ methods:{
       mem.quantity--;
       this.totalQuantity--;
     }
+  },
+  handleStClick(st){
+    if(this.currentlySelectedMotherboard.noSataPorts > this.selectedSt.length){
+      this.selectedSt.push(st)
+      this.totalStorage++
+      this.storage = this.storage.filter((storage) => {
+        return st.id != storage.id
+      });
+    }
+    else{
+      alert('Maximum storage drives')
+    }
+  },
+  increaseStQuantity(st){
+     if(this.currentlySelectedMotherboard.noSataPorts > this.totalStorage){
+      this.totalStorage++
+      st.quantity++
+     }
+    else{
+      alert('Maximum storage drives')
+    }
+  },
+  decreaseStQuantity(st){
+    if(st.quantity ==1){
+      alert('cannot be less than 1')
+    }
+    else{
+      st.quantity--
+      this.totalStorage--
+    }
+  },
+  removeSelectedSt(st){
+     this.storage.push(st);
+    this.totalStorage = this.totalStorage - st.quantity
+    this.selectedSt = this.selectedSt.filter((storage) => {
+      return st.id != storage.id
+   });
   },
   handleCaseClick(c){
     this.currentlySelectedCase= c ;
@@ -360,7 +439,7 @@ methods:{
   handleMonClick(mon){
     
     if(this.motherboardVideoPorts.length > 1 && 
-      this.totalMotherboardVideoPorts >= this.totalMonitors){
+      this.totalMotherboardVideoPorts > this.totalMonitors){
         this.totalMonitors++;
         
         this.selectedMonitors.push(mon)
@@ -370,7 +449,7 @@ methods:{
       
     }
       else if(this.graphicsVideoPorts.length > 1 && 
-          this.totalGraphicsCardVideoPorts >= this.totalMonitors){
+          this.totalGraphicsCardVideoPorts > this.totalMonitors){
             this.totalMonitors++;
             
             this.selectedMonitors.push(mon)
@@ -384,42 +463,44 @@ methods:{
    },
    removeSelectedMon(mon) {
     this.monitors.push(mon);
-    this.totalMonitors = this.totalMonitors - mon.quantity
+    this.totalMonitors = this.totalMonitors - mon.quantity 
     this.selectedMonitors = this.selectedMonitors.filter((monitors) => {
       return mon.id != monitors.id
       });
    },
    increaseMonQuantity(mon){
-     if(this.motherboardVideoPorts.length > 1 && 
-      this.totalMotherboardVideoPorts > this.totalMonitors){
-        
-        mon.quantity++
-        console.log(mon.quantity)
-        this.totalMonitors++;
-        
-      }
-      else if (this.graphicsVideoPorts.length> 1 && 
-          this.totalGraphicsCardVideoPorts > this.totalMonitors){
-            mon.quantity++
-            this.totalMonitors++;
-            
-        }
       
-      else { 
-        alert('Cannot add more monitors, the maximum allowed quantity exceeded')
-      }
+        if (this.motherboardVideoPorts.length > 1 &&
+          this.totalMotherboardVideoPorts > this.totalMonitors){
+          mon.quantity++
+          console.log(mon.quantity)
+          this.totalMonitors++;
+        }  
+     
+        else if(this.graphicsVideoPorts.length > 1 && 
+          this.totalGraphicsCardVideoPorts > this.totalMonitors){
+          mon.quantity++
+          this.totalMonitors++;      
+         
+        }
+        else {
+          alert('Cannot add more monitors, the maximum allowed quantity exceeded')
+        }      
+      
+
+    
+
     },
     decreaseMonQuantity(mon){
-      console.log(mon.quantity)
-      if(!mon.quantity == 1 ){
-        mon.quantity--;
-        this.totalMonitors--;  
+      if(mon.quantity == 1 ){
+      
+        alert('Cannot decrease less than 1') 
       }
       else { 
-        alert('Cannot decrease less than 1')
+        mon.quantity--;
+        this.totalMonitors--; 
       }  
     }
-   
   },
   async mounted() {
     try {

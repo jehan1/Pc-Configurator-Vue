@@ -62,7 +62,7 @@
 
   <div>
     <b-list-group>
-      <b-list-group-item v-for="st in selectedSt" v-bind:key="st.id" >
+      <b-list-group-item v-for="st in selectedSt" v-bind:key="st.id"  >
         <div class="selected-storage-item">
           <p id="selected-storage-name">{{ st.name }}</p>
           <p id="selected-storage-quantity">Quantity: {{ st.quantity }}</p>
@@ -77,8 +77,36 @@
       </b-list-group-item>
     </b-list-group>
   </div>
+    
+  <div id="mPortDropdown">
+     <b-dropdown variant="outline-success" v-if="this.selectedSt.length >= 1 "
+                id="dropdown-1" text="Select M.2 Drive..." class="m-md-2" :disabled="this.mPorts.length == 0">
+      <b-dropdown-item v-for="mp in mPorts" v-bind:key="mp.id"
+                       v-on:click="handleMportClick(mp)">
+        {{ mp.name }}
+      </b-dropdown-item>
+    </b-dropdown>
+  </div>
+
+  <div>
+    <b-list-group>
+      <b-list-group-item v-for="sMports in selectedMports" v-bind:key="sMports.id" >
+        <div class="selected-mPort-item">
+          <p id="selected-mPort-name">{{ sMports.name }}</p>
+          <p id="selected-mPort-quantity">Quantity: {{ sMports.quantity }}</p>
+          <b-button class="selected-mPort-btn" @click="increaseMportQuantity(sMports)" variant="success">
+            <fa-icon icon="plus"></fa-icon>
+          </b-button>
+          <b-button class="selected-mPort-btn" v-on:click="decreaseMportQuantity(sMports)" variant="warning">
+            <fa-icon icon="minus"></fa-icon>
+          </b-button>
+          <b-button class="selected-mPort-btn" v-on:click="removeSelectedMport(sMports)" variant="outline-danger">Remove</b-button>
+        </div>
+      </b-list-group-item>
+    </b-list-group>
+  </div>
   <div id="CaseDropdown">
-      <b-dropdown variant="outline-success" v-if="selectedMemory.length >= 1 "
+      <b-dropdown variant="outline-success" v-if=" selectedSt.length >= 1 "
                 id="dropdown-1" :text="currentlySelectedCase.name" class="m-md-2">
       <b-dropdown-item v-for=" c in Case" v-bind:key="c.id"
                        v-on:click="handleCaseClick(c)">
@@ -152,6 +180,7 @@ import CaseApi from '../services/api/Case.js';
 import GcardApi from '../services/api/GraphicsCard.js';
 import MonApi from '../services/api/Monitors.js';
 import StorageApi from '../services/api/Storage.js';
+import MporteApi from '../services/api/Mports.js';
 
 
 export default {
@@ -181,6 +210,11 @@ data(){
     selectedSt: [],
     totalStorage: 0,
     
+    mPorts:[],
+    mPortId:[],
+    selectedMports:[],
+    totalMports: 0,
+
 
     monitors:[],
     selectedMonitors:[],
@@ -203,6 +237,9 @@ methods:{
     this.monitors = [];
     this.motherboardVideoPorts =[],
     this.selectedSt= [],
+    this.selectedMports = []
+    this.mPortId = [],
+    this.mPorts = [],
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -223,6 +260,14 @@ methods:{
     }
     this.storage = apiSto;
 
+    this.getMportsId()
+    for(var i =0 ; i < this.mPortId.length ; i++){
+      var temp = await MporteApi.getMports(this.mPortId[i])
+        for (var j = 0; j < temp.length; j++) {
+          temp[j].quantity = 1;
+          this.mPorts.push(temp[j])
+        }
+    }
     this.Case = await CaseApi.getCase(this.currentlySelectedMotherboard.caseSize.size)
     
     this.getPciLaneId()
@@ -232,13 +277,12 @@ methods:{
 
      var gCards = await GcardApi.getGrCard(this.PciLaneId[i])
       for(var j = 0 ; j < gCards.length; j++ ){
-              this.graphicsCard.push(gCards[j])
+        this.graphicsCard.push(gCards[j])
       }
     }
 
     this.getOnBoardMonitors()
-    
-    
+
   },
   handleProcClick(proc){
     this.currentlySelectedProcessor = proc;
@@ -317,12 +361,78 @@ methods:{
     }
   },
   removeSelectedSt(st){
-     this.storage.push(st);
+    this.storage.push(st);
     this.totalStorage = this.totalStorage - st.quantity
     this.selectedSt = this.selectedSt.filter((storage) => {
       return st.id != storage.id
    });
   },
+  getMportsId(){
+    var temp = this.currentlySelectedMotherboard.portM
+    for(var i = 0; i < temp.length ; i++){
+      this.mPortId.push(temp[i].id.portMId)
+    }
+  }, 
+  handleMportClick(mp){
+     
+     var temp = this.currentlySelectedMotherboard.portM
+     var portId= null
+     for(var i =0 ; i < temp.length ; i++){
+       if(temp[i].id.portMId == mp.portsM.id){
+        portId = temp[i] 
+       }
+     }
+      
+      if( portId.quantity >= mp.quantity ){
+          
+        this.selectedMports.push(mp)
+        this.totalMports++
+
+        this.mPorts = this.mPorts.filter((mPorts) => {
+          return mp.portsM.id != mPorts.portsM.id
+        });
+      }
+  },
+  increaseMportQuantity(sMports){
+    var temp = this.currentlySelectedMotherboard.portM
+    var portId= null
+    for(var i =0 ; i < temp.length ; i++){
+      if(temp[i].id.portMId == sMports.portsM.id){
+        portId = temp[i]
+       }
+      }
+    
+      if(portId.quantity > sMports.quantity){
+        this.totalMports++
+        sMports.quantity++
+      }
+      else{
+        alert('Max M.2 Ports allowed')
+      }   
+  },
+
+  decreaseMportQuantity(sMports){
+    if(sMports.quantity ==1){
+      alert('cannot be less than 1')
+    }
+    else{
+      sMports.quantity--
+      
+    }
+  },
+  async removeSelectedMport(sMports){
+ 
+    var temp = await MporteApi.getMports(sMports.portsM.id)
+    for(var i = 0; i < temp.length; i++){
+      temp[i].quantity = 1;
+      this.mPorts.push(temp[i])
+    }
+    this.selectedMports = this.selectedMports.filter((mPorts) => {
+      return sMports.id != mPorts.id
+    });
+   
+  },
+
   handleCaseClick(c){
     this.currentlySelectedCase= c ;
   },
@@ -331,9 +441,7 @@ methods:{
     this.selectedGraphicsCard= null
     this.totalGcardQuantity++;
     this.selectedGraphicsCard = gCard;
-    
-    
-    
+  
     this.getGraphicsCardMonitors();
 
   },
@@ -355,10 +463,10 @@ methods:{
             if(this.totalGcardQuantity < temp[i].quantity){
               this.totalGcardQuantity++;
             }
-            else{
+          else{
               alert(" Quntity exceeded")
             }          
-        }
+        }  
     }
   },
   decreasegCardQuantity(selectedGraphicsCard){
@@ -391,16 +499,17 @@ methods:{
 
       var mon = await MonApi.getMonitors(this.graphicsVideoPorts[i])
       for(var j = 0 ; j < mon.length; j++ ){
+        mon[j].quantity = 1;
         if(this.monitors.length < 1){
             this.monitors.push(mon[j])
             this.monitorId.push(mon[j].id)
-            mon[j].quantity = 1;
+            
         }
         else{ 
           if( !this.monitorId.includes(mon[j].id) ){
           this.monitors.push(mon[j])
           this.monitorId.push(mon[j].id)
-          mon[j].quantity = 1;
+          
           }   
         }
       }
@@ -421,16 +530,17 @@ methods:{
 
       var mon = await MonApi.getMonitors(this.motherboardVideoPorts[i])
       for(var j = 0 ; j < mon.length; j++ ){
+        mon[j].quantity = 1;
         if(this.monitors.length < 1){
             this.monitors.push(mon[j])
             this.monitorId.push(mon[j].id)
-            mon[j].quantity = 1;
+            
         }
         else{ 
           if( !this.monitorId.includes(mon[j].id) ){
           this.monitors.push(mon[j])
           this.monitorId.push(mon[j].id)
-          mon[j].quantity = 1;
+          
           }   
         }
       }
@@ -470,25 +580,21 @@ methods:{
    },
    increaseMonQuantity(mon){
       
-        if (this.motherboardVideoPorts.length > 1 &&
-          this.totalMotherboardVideoPorts > this.totalMonitors){
-          mon.quantity++
-          console.log(mon.quantity)
-          this.totalMonitors++;
-        }  
+    if (this.motherboardVideoPorts.length > 1 &&
+      this.totalMotherboardVideoPorts > this.totalMonitors){
+      mon.quantity++
+      this.totalMonitors++;
+    }  
      
-        else if(this.graphicsVideoPorts.length > 1 && 
-          this.totalGraphicsCardVideoPorts > this.totalMonitors){
-          mon.quantity++
-          this.totalMonitors++;      
+    else if(this.graphicsVideoPorts.length > 1 && 
+      this.totalGraphicsCardVideoPorts > this.totalMonitors){
+      mon.quantity++
+      this.totalMonitors++;      
          
-        }
-        else {
-          alert('Cannot add more monitors, the maximum allowed quantity exceeded')
-        }      
-      
-
-    
+    }
+      else {
+        alert('Cannot add more monitors, the maximum allowed quantity exceeded')
+      }      
 
     },
     decreaseMonQuantity(mon){
@@ -536,7 +642,8 @@ methods:{
         totalGraVideoPorts += temp[i].quantity
         }
       return  totalGraVideoPorts
-    } 
+    },
+    
   } 
 }
 

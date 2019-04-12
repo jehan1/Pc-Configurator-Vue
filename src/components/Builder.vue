@@ -568,7 +568,7 @@ methods:{
             });
       }
       else{
-        alert('Cannot add more monitors a annot add more monitors, the maximum allowed quantity exceeded')
+        alert('Cannot add more monitors, the maximum allowed quantity exceeded')
       }
    },
    removeSelectedMon(mon) {
@@ -579,24 +579,48 @@ methods:{
       });
    },
    increaseMonQuantity(mon){
+     var mbTemp = this.currentlySelectedMotherboard.videoPorts //motherboard video ports
+     var mTemp = mon.videoPort //monitor video ports
+     var gTemp = this.selectedGraphicsCard.videoPorts
       
-    if (this.motherboardVideoPorts.length > 1 &&
+    if (this.motherboardVideoPorts.length > 1 && 
       this.totalMotherboardVideoPorts > this.totalMonitors){
-      mon.quantity++
-      this.totalMonitors++;
+      outerloop: for(var i = 0; i < mbTemp.length; i ++){
+        for(var j = 0; j < mTemp.length; j++ ){
+          if(mbTemp[i].id.videoPortsId == mTemp[j].id &&
+            mbTemp[i].quantity >= mon.quantity){  
+              mon.quantity++
+              this.totalMonitors++; 
+  
+              break outerloop;
+            }
+          }
+      }
     }  
      
-    else if(this.graphicsVideoPorts.length > 1 && 
+    else if (this.graphicsVideoPorts.length > 1 && 
       this.totalGraphicsCardVideoPorts > this.totalMonitors){
-      mon.quantity++
-      this.totalMonitors++;      
-         
+      outerloop: for(var i = 0; i < gTemp.length; i ++){
+        for(var j = 0; j < mTemp.length; j++ ){
+          if(gTemp[i].id.videoPortsId == mTemp[j].id &&
+            gTemp[i].quantity >= mon.quantity){
+                console.log(gTemp[i].quantity)
+              mon.quantity++
+              this.totalMonitors++; 
+  
+              break outerloop;
+  
+            }
+          }
+      }
     }
       else {
         alert('Cannot add more monitors, the maximum allowed quantity exceeded')
       }      
 
     },
+    
+    
     decreaseMonQuantity(mon){
       if(mon.quantity == 1 ){
       

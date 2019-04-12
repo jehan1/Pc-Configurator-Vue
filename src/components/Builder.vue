@@ -258,7 +258,7 @@ methods:{
     this.mPorts = [],
     this.totalVoltage = 0,
     this.totalMolex = 0,
-    this.selectedPowerSupply = {name: 'Select The Pwer Supply...'}
+    this.selectedPowerSupply ={name: 'Select The Pwer Supply...'}
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -306,9 +306,10 @@ methods:{
     
 
   },
-  handleProcClick(proc){
+  async handleProcClick(proc){
     this.currentlySelectedProcessor = proc;
     this.totalVoltage = this.currentlySelectedProcessor.voltage
+    this.powerSpplies = await PowerSApi.getPowerSupplies(this.totalMolex,this.totalVoltage);
   }, 
   handleMemClick(mem) {
     
@@ -464,6 +465,7 @@ methods:{
     this.selectedGraphicsCard= null
     this.totalGcardQuantity++;
     this.selectedGraphicsCard = gCard;
+    this.powerSpplies=[]
   
     this.getGraphicsCardMonitors();
     this.totalVoltage = parseInt(this.totalVoltage) + parseInt(this.selectedGraphicsCard.voltage)

@@ -167,6 +167,15 @@
       </b-list-group-item>
     </b-list-group>
   </div>
+  <div id="powerSupplyDropdown">
+     <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null"
+                id="dropdown-1" :text="selectedPowerSupply.name" class="m-md-2" >
+      <b-dropdown-item v-for="ps in powerSpplies" v-bind:key="ps.id"
+                       v-on:click="handlePowerSupplyClick(ps)">
+        {{ ps.name }}
+      </b-dropdown-item>
+    </b-dropdown>
+  </div>
 </div>
 </template>
 
@@ -181,6 +190,7 @@ import GcardApi from '../services/api/GraphicsCard.js';
 import MonApi from '../services/api/Monitors.js';
 import StorageApi from '../services/api/Storage.js';
 import MporteApi from '../services/api/Mports.js';
+import PowerSApi from '../services/api/PowerSupply.js';
 
 
 export default {
@@ -221,7 +231,13 @@ data(){
     motherboardVideoPorts:[],
     graphicsVideoPorts:[],
     monitorId: [],
-    totalMonitors: 0
+    totalMonitors: 0,
+
+    powerSpplies: [],
+    totalVoltage: 0,
+    totalMolex: 0,
+
+    selectedPowerSupply:{name: 'Select The Pwer Supply...'}
   }
 },
 
@@ -240,6 +256,9 @@ methods:{
     this.selectedMports = []
     this.mPortId = [],
     this.mPorts = [],
+    this.totalVoltage = 0,
+    this.totalMolex = 0,
+    this.selectedPowerSupply = {name: 'Select The Pwer Supply...'}
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -283,9 +302,13 @@ methods:{
 
     this.getOnBoardMonitors()
 
+    this.totalMolex = this.currentlySelectedMotherboard.molexConnectors.id
+    
+
   },
   handleProcClick(proc){
     this.currentlySelectedProcessor = proc;
+    this.totalVoltage = this.currentlySelectedProcessor.voltage
   }, 
   handleMemClick(mem) {
     
@@ -436,13 +459,18 @@ methods:{
   handleCaseClick(c){
     this.currentlySelectedCase= c ;
   },
-  handleGcardClick(gCard){
+  async handleGcardClick(gCard){
     this.totalGcardQuantity = 0;
     this.selectedGraphicsCard= null
     this.totalGcardQuantity++;
     this.selectedGraphicsCard = gCard;
   
     this.getGraphicsCardMonitors();
+    this.totalVoltage = parseInt(this.totalVoltage) + parseInt(this.selectedGraphicsCard.voltage)
+    this.totalMolex = parseInt(this.totalMolex) + parseInt(this.selectedGraphicsCard.molexConnectors.id)
+
+    this.powerSpplies = await PowerSApi.getPowerSupplies(this.totalMolex,this.totalVoltage);
+
 
   },
   getPciLaneId(){
@@ -604,7 +632,7 @@ methods:{
         for(var j = 0; j < mTemp.length; j++ ){
           if(gTemp[i].id.videoPortsId == mTemp[j].id &&
             gTemp[i].quantity >= mon.quantity){
-                console.log(gTemp[i].quantity)
+            
               mon.quantity++
               this.totalMonitors++; 
   
@@ -620,7 +648,6 @@ methods:{
 
     },
     
-    
     decreaseMonQuantity(mon){
       if(mon.quantity == 1 ){
       
@@ -630,6 +657,9 @@ methods:{
         mon.quantity--;
         this.totalMonitors--; 
       }  
+    },
+    handlePowerSupplyClick(ps){
+      this.selectedPowerSupply = ps;
     }
   },
   async mounted() {
@@ -667,8 +697,10 @@ methods:{
         }
       return  totalGraVideoPorts
     },
+      
     
-  } 
+    }
+  
 }
 
 </script>

@@ -1,184 +1,84 @@
 <template>
   <div>
-    <div>
-      <b-dropdown id="dropdown-1" variant="outline-primary" :text="currentlySelectedMotherboard.name" class="m-md-2">
-      <b-dropdown-item v-for="mobo in motherboard" v-bind:key="mobo.id"
-                      v-on:click="handleMoboClick(mobo)">
-        {{ mobo.name }}
-      </b-dropdown-item>
-      </b-dropdown>
-    </div>
-   <div id="processorDropdown">
-      <b-dropdown variant="outline-success" v-if="currentlySelectedMotherboard.id != null"
-                id="dropdown-1" :text="currentlySelectedProcessor.name" class="m-md-2">
-      <b-dropdown-item v-for="proc in processors" v-bind:key="proc.id"
-                       v-on:click="handleProcClick(proc)">
-        {{ proc.name }}
-      </b-dropdown-item>
-    </b-dropdown>
-  </div>
+    <Motherboard 
+    v-bind:motherboard="motherboard"
+    @handle-mobo-click ="handleMoboClick"
+    >
+    </Motherboard>
+    <Processor
+     v-bind:processors="processors"
+     v-bind:currentlySelectedMotherboard="currentlySelectedMotherboard"
+     @handle-pro-click = "handleProcClick"
+     />
+   
+    <Memory
+     v-bind:memory="memory"
+     v-bind:selectedMemory="selectedMemory"
+     v-bind:totalMem= "totalMem"
+     v-bind:currentlySelectedProcessor= "currentlySelectedProcessor"
+     @handle-mem-click = "handleMemClick"
+     @increase-mem-quantity ="increaseMemQuantity"
+     @decrease-mem-quantity="decreaseMemQuantity"
+     @remove-selected-mem="removeSelectedMem"
+     />
+   
+    <storage
+     v-bind:storage="storage"
+     v-bind:selectedSt="selectedSt"
+     v-bind:selectedMemory= "selectedMemory" 
+     @handle-st-click = "handleStClick"
+     @increase-st-quantity ="increaseStQuantity"
+     @decrease-st-quantity="decreaseStQuantity"
+     @remove-selected-st="removeSelectedSt"
+    />
 
-  <div id="memoryDropdown">
-     <b-dropdown variant="outline-success" v-if="this.currentlySelectedProcessor.id != null"
-                id="dropdown-1" text="Select Memory..." class="m-md-2" :disabled="this.memory.length == 0">
-      <b-dropdown-item v-for="mem in memory" v-bind:key="mem.id"
-                       v-on:click="handleMemClick(mem)">
-        {{ mem.name }}
-      </b-dropdown-item>
-    </b-dropdown>
-  </div>
+    <Mport
+     v-bind:mPorts="mPorts"
+     v-bind:selectedMports="selectedMports"
+     v-bind:selectedSt= "selectedSt"
+     @handle-mport-click = "handleMportClick"
+     @increase-mport-quantity ="increaseMportQuantity"
+     @decrease-mport-quantity="decreaseMportQuantity"
+     @remove-selected-mport="removeSelectedMport"    
+    />
 
-  <div>
-    <b-list-group>
-      <b-list-group-item v-for="mem in selectedMemory" v-bind:key="mem.id" >
-        <div class="selected-memory-item">
-          <p id="selected-memory-name">{{ mem.name }}</p>
-          <p id="selected-memory-quantity">Quantity: {{ mem.quantity }}</p>
-          <b-button class="selected-mem-btn" @click="increaseMemQuantity(mem)" variant="success">
-            <fa-icon icon="plus"></fa-icon>
-          </b-button>
-          <b-button class="selected-mem-btn" v-on:click="decreaseMemQuantity(mem)" variant="warning">
-            <fa-icon icon="minus"></fa-icon>
-          </b-button>
-          <b-button class="selected-mem-btn" v-on:click="removeSelectedMem(mem)" variant="outline-danger">Remove</b-button>
-        </div>
-      </b-list-group-item>
-    </b-list-group>
-    
-    <p v-if="this.selectedMemory.length >= 1">Total selected memory size: {{ this.totalMem }} GB</P>
-  </div>
-  <div id="storageDropdown">
-     <b-dropdown variant="outline-success" v-if="this.selectedMemory.length >= 1 "
-                id="dropdown-1" text="Select Storage Drive..." class="m-md-2" :disabled="this.storage.length == 0">
-      <b-dropdown-item v-for="st in storage" v-bind:key="st.id"
-                       v-on:click="handleStClick(st)">
-        {{ st.name }}
-      </b-dropdown-item>
-      <b-dropdown-divider  > 
-      
-      </b-dropdown-divider>
-    </b-dropdown>
-  </div>
+    <Case
+     v-bind:Case="Case"
+     v-bind:selectedSt= "selectedSt"
+     @handle-case-click = "handleCaseClick"
+    />
 
-  <div>
-    <b-list-group>
-      <b-list-group-item v-for="st in selectedSt" v-bind:key="st.id"  >
-        <div class="selected-storage-item">
-          <p id="selected-storage-name">{{ st.name }}</p>
-          <p id="selected-storage-quantity">Quantity: {{ st.quantity }}</p>
-          <b-button class="selected-storage-btn" @click="increaseStQuantity(st)" variant="success">
-            <fa-icon icon="plus"></fa-icon>
-          </b-button>
-          <b-button class="selected-storage-btn" v-on:click="decreaseStQuantity(st)" variant="warning">
-            <fa-icon icon="minus"></fa-icon>
-          </b-button>
-          <b-button class="selected-storage-btn" v-on:click="removeSelectedSt(st)" variant="outline-danger">Remove</b-button>
-        </div>
-      </b-list-group-item>
-    </b-list-group>
-  </div>
-    
-  <div id="mPortDropdown">
-     <b-dropdown variant="outline-success" v-if="this.selectedSt.length >= 1 "
-                id="dropdown-1" text="Select M.2 Drive..." class="m-md-2" :disabled="this.mPorts.length == 0">
-      <b-dropdown-item v-for="mp in mPorts" v-bind:key="mp.id"
-                       v-on:click="handleMportClick(mp)">
-        {{ mp.name }}
-      </b-dropdown-item>
-    </b-dropdown>
-  </div>
+    <GraphicsCard
+     v-bind:graphicsCard="graphicsCard"
+     v-bind:selectedGraphicsCard="selectedGraphicsCard"
+     v-bind:currentlySelectedCase= "currentlySelectedCase"
+     v-bind:totalGcardQuantity= "totalGcardQuantity"
+     @handle-gcard-click = "handleGcardClick"
+     @increase-gcard-quantity ="increasegCardQuantity"
+     @decrease-gcard-quantity="decreasegCardQuantity"
+     @remove-selected-gcard="removeSelectedgCard"  
+    />
 
-  <div>
-    <b-list-group>
-      <b-list-group-item v-for="sMports in selectedMports" v-bind:key="sMports.id" >
-        <div class="selected-mPort-item">
-          <p id="selected-mPort-name">{{ sMports.name }}</p>
-          <p id="selected-mPort-quantity">Quantity: {{ sMports.quantity }}</p>
-          <b-button class="selected-mPort-btn" @click="increaseMportQuantity(sMports)" variant="success">
-            <fa-icon icon="plus"></fa-icon>
-          </b-button>
-          <b-button class="selected-mPort-btn" v-on:click="decreaseMportQuantity(sMports)" variant="warning">
-            <fa-icon icon="minus"></fa-icon>
-          </b-button>
-          <b-button class="selected-mPort-btn" v-on:click="removeSelectedMport(sMports)" variant="outline-danger">Remove</b-button>
-        </div>
-      </b-list-group-item>
-    </b-list-group>
-  </div>
-  <div id="CaseDropdown">
-      <b-dropdown variant="outline-success" v-if=" selectedSt.length >= 1 "
-                id="dropdown-1" :text="currentlySelectedCase.name" class="m-md-2">
-      <b-dropdown-item v-for=" c in Case" v-bind:key="c.id"
-                       v-on:click="handleCaseClick(c)">
-        {{ c.name}}
-      </b-dropdown-item>
-    </b-dropdown>
-  </div>
-   <div id="GraphicsCardDropdown">
-      <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null "
-                id="dropdown-2" :text="selectedGraphicsCard.name" class="m-md-2">
-      <b-dropdown-item v-for=" gCard in graphicsCard" v-bind:key="gCard.id"
-                       v-on:click="handleGcardClick(gCard)">
-        {{ gCard.name}}
-      </b-dropdown-item>
-    </b-dropdown>
-  </div>
-  <div>
-    <b-list-group>
-      <b-list-group-item  selectedGraphicsCard v-if="this.selectedGraphicsCard.id != null " >
-        <div class="selected-GraphicsCard-item">
-          <p id="selected-GraphicsCard-name">{{ selectedGraphicsCard.name }}</p>
-          <p id="selected-GraphicsCard-quantity">Quantity: {{ this.totalGcardQuantity }}</p>
-          <b-button class="selected-GraphicsCard-btn" v-on:click="increasegCardQuantity(selectedGraphicsCard)" variant="success">
-            <fa-icon icon="plus"></fa-icon>
-          </b-button>
-          <b-button class="selected-GraphicsCard-btn" v-on:click="decreasegCardQuantity(selectedGraphicsCard)" variant="warning">
-            <fa-icon icon="minus"></fa-icon>
-          </b-button>
-          <b-button class="selected-mon-btn" v-on:click="removeSelectedgCard(selectedGraphicsCard)" variant="outline-danger">Remove</b-button>
-        </div>
-      </b-list-group-item>
-    </b-list-group>
-  </div>
-  <div id="monitorDropdown">
-     <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null"
-                id="dropdown-1" text="Select Monitors..." class="m-md-2" :disabled="this.monitors.length == 0">
-      <b-dropdown-item v-for="mon in monitors" v-bind:key="mon.id"
-                       v-on:click="handleMonClick(mon)">
-        {{ mon.name }}
-      </b-dropdown-item>
-    </b-dropdown>
-  </div>
+    <Monitors
+     v-bind:monitors="monitors"
+     v-bind:selectedMonitors="selectedMonitors"
+     v-bind:currentlySelectedCase= "currentlySelectedCase"
+     @handle-mon-click = "handleMonClick"
+     @increase-mon-quantity ="increaseMonQuantity"
+     @decrease-mon-quantity="decreaseMonQuantity"
+     @remove-selected-mon="removeSelectedMon"
+    />
+     <PowerSupply
+     v-bind:powerSpplies="powerSpplies"
+     v-bind:selectedPowerSupply="selectedPowerSupply"
+     v-bind:currentlySelectedCase= "currentlySelectedCase"
+     @handle-power-supply-click = "handlePowerSupplyClick" 
+     />
+  
 
-  <div>
-    <b-list-group>
-      <b-list-group-item v-for="mon in selectedMonitors" v-bind:key="mon.id" >
-        <div class="selected-Monitors-item">
-          <p id="selected-Monitors-name">{{ mon.name }}</p>
-          <p id="selected-Monitors-quantity">Quantity: {{ mon.quantity }}</p>
-          <b-button class="selected-mon-btn" v-on:click="increaseMonQuantity(mon)" variant="success">
-            <fa-icon icon="plus"></fa-icon>
-          </b-button>
-          <b-button class="selected-mon-btn" v-on:click="decreaseMonQuantity(mon)" variant="warning">
-            <fa-icon icon="minus"></fa-icon>
-          </b-button>
-          <b-button class="selected-mon-btn" v-on:click="removeSelectedMon(mon)" variant="outline-danger">Remove</b-button>
-        </div>
-      </b-list-group-item>
-    </b-list-group>
-  </div>
-  <div id="powerSupplyDropdown">
-     <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null"
-                id="dropdown-1" :text="selectedPowerSupply.name" class="m-md-2" >
-      <b-dropdown-item v-for="ps in powerSpplies" v-bind:key="ps.id"
-                       v-on:click="handlePowerSupplyClick(ps)">
-        {{ ps.name }}
-      </b-dropdown-item>
-    </b-dropdown>
-  </div>
+  
 </div>
 </template>
-
 
 <script>
 
@@ -192,9 +92,29 @@ import StorageApi from '../services/api/Storage.js';
 import MporteApi from '../services/api/Mports.js';
 import PowerSApi from '../services/api/PowerSupply.js';
 
+import Motherboard from './Motherboard.vue';
+import Processor from './Processor.vue';
+import Memory from './Memory.vue';
+import Storage from './Storage.vue';
+import Mport from './Mport.vue';
+import Case from './Case.vue';
+import GraphicsCard from './GraphicsCard.vue';
+import Monitors from './Monitors.vue';
+import PowerSupply from './PowerSupply.vue';
 
 export default {
   name: 'Builder',
+  components:{
+    Motherboard,
+    Processor,
+    Memory,
+    Storage,
+    Mport,
+    Case,
+    GraphicsCard,
+    Monitors,
+    PowerSupply
+  },
 
 data(){
   return {
@@ -224,7 +144,6 @@ data(){
     mPortId:[],
     selectedMports:[],
     totalMports: 0,
-
 
     monitors:[],
     selectedMonitors:[],
@@ -312,7 +231,7 @@ methods:{
     this.powerSpplies = await PowerSApi.getPowerSupplies(this.totalMolex,this.totalVoltage);
   }, 
   handleMemClick(mem) {
-    
+    this.selectedMemory = []
     if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory||
         this.totalQuantity   >= this.currentlySelectedMotherboard.noMemoryPorts) {
       alert('NO MORE NEW MEMORY ALLOWED, SIZE EXCEEDED')
@@ -320,17 +239,20 @@ methods:{
     else {
       this.totalQuantity++;
       this.selectedMemory.push(mem);
-      this.memory = this.memory.filter((memory) => {
-        return mem.id != memory.id
-      });
+      this.memory = []
     }
   },
-  removeSelectedMem(mem) {
-    this.memory.push(mem);
+  async removeSelectedMem(mem) {
+    
     this.totalQuantity = this.totalQuantity - mem.quantity
-    this.selectedMemory = this.selectedMemory.filter((memory) => {
-      return mem.id != memory.id
-   });
+    this.selectedMemory = []
+     var apiMem = await MemApi.getMemory(
+      this.currentlySelectedMotherboard.memoryType.id)
+    for (var i = 0; i < apiMem.length; i++) {
+      apiMem[i].quantity = 1;
+    }
+    this.memory = apiMem;
+   
    
   },
   increaseMemQuantity(mem) {
@@ -539,7 +461,6 @@ methods:{
           if( !this.monitorId.includes(mon[j].id) ){
           this.monitors.push(mon[j])
           this.monitorId.push(mon[j].id)
-          
           }   
         }
       }
@@ -570,7 +491,6 @@ methods:{
           if( !this.monitorId.includes(mon[j].id) ){
           this.monitors.push(mon[j])
           this.monitorId.push(mon[j].id)
-          
           }   
         }
       }
@@ -604,6 +524,7 @@ methods:{
    removeSelectedMon(mon) {
     this.monitors.push(mon);
     this.totalMonitors = this.totalMonitors - mon.quantity 
+    mon.quantity = 1
     this.selectedMonitors = this.selectedMonitors.filter((monitors) => {
       return mon.id != monitors.id
       });
@@ -699,10 +620,7 @@ methods:{
         }
       return  totalGraVideoPorts
     },
-      
-    
-    }
-  
+  } 
 }
 
 </script>
@@ -723,97 +641,4 @@ a {
   color: #42b983;
 }
 
-#processorDropdown {
-  margin: 20px 0px 0px 0px;
-  cursor: pointer;
-}
-
-#memoryDropdown{
-
-  margin: 10px 20px 10px 10px;
-  cursor: pointer;
-}
-
-.selected-memory-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-#selected-memory-name {
-  vertical-align: middle;
-  margin-bottom: 0
-}
-
-#selected-memory-quantity {
-  width: 80px;
-  margin: 0px 20px 0px 20px;
-  cursor: pointer;
-}
-
-.selected-mem-btn {
-  margin:  0px 10px 0px 0px;
-  cursor: pointer;
-}
-#CaseDropdown{
-  margin: 20px 0px 0px 10px;
-  cursor: pointer;
-}
-
-#GraphicsCardDropdown{
-  margin: 20px 0px 10px 10px;
-  cursor: pointer;
-}
-.selected-GraphicsCard-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center
-}
-
-#selected-GraphicsCard-name {
-  vertical-align: middle;
-  margin-bottom: 0
-}
-
-#selected-GraphicsCard-quantity {
-  width: 80px;
-  margin: 0px 20px 0px 20px
-}
-
-.selected-GraphicsCard-btn {
-  margin:  0px 10px 0px 0px;
-}
-
-#monitorDropdown{
-
-  margin: 10px 20px 10px 10px;
-  cursor: pointer;
-}
-
-.selected-Monitors-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-#selected-Monitors-name {
-  vertical-align: middle;
-  margin-bottom: 0
-}
-
-#selected-Monitors-quantity {
-  width: 80px;
-  margin: 0px 20px 0px 20px;
-  cursor: pointer;
-}
-
-.selected-mon-btn {
-  margin:  0px 10px 0px 0px;
-  cursor: pointer;
-}
 </style>

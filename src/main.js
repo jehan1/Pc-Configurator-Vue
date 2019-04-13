@@ -18,6 +18,7 @@ Vue.component('fa-icon', FontAwesomeIcon)
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
 
+export const config = new Vue();
 
 new Vue({
   render: h => h(App),

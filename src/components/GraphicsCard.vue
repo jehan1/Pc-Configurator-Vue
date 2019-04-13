@@ -62,6 +62,35 @@ export default {
             this.$emit('remove-selected-gcard',selectedGraphicsCard)
         }
     }
-  
 }
 </script>
+
+<style scoped>
+
+#GraphicsCardDropdown{
+  margin: 20px 0px 10px 10px;
+  cursor: pointer;
+}
+.selected-GraphicsCard-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center
+}
+
+#selected-GraphicsCard-name {
+  vertical-align: middle;
+  margin-bottom: 0
+}
+
+#selected-GraphicsCard-quantity {
+  width: 80px;
+  margin: 0px 20px 0px 20px
+}
+
+.selected-GraphicsCard-btn {
+  margin:  0px 10px 0px 0px;
+}
+
+</style>
+

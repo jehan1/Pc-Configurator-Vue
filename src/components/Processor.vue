@@ -32,6 +32,7 @@ export default {
       
     methods:{
       handleProcClick(proc){
+        this.currentlySelectedProcessor = proc
         this.$emit('handle-pro-click',proc);
  
       }

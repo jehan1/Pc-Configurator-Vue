@@ -24,6 +24,7 @@ export default {
     },
     methods:{
         handleMoboClick(mobo){
+            this.currentlySelectedMotherboard = mobo
             this.$emit('handle-mobo-click',mobo);
             
         }

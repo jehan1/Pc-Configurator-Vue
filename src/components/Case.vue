@@ -34,3 +34,11 @@ export default {
 
 }
 </script>
+
+<style scoped>
+#processorDropdown {
+  margin: 20px 0px 0px 0px;
+  cursor: pointer;
+}
+</style>
+

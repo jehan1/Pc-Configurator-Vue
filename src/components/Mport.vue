@@ -57,3 +57,36 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+#mPortDropdown{
+
+  margin: 10px 20px 10px 10px;
+  cursor: pointer;
+}
+
+.selected-mPort-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#selected-mPort-name {
+  vertical-align: middle;
+  margin-bottom: 0
+}
+
+#selected-mPort-quantity {
+  width: 80px;
+  margin: 0px 20px 0px 20px;
+  cursor: pointer;
+}
+
+.selected-mPort-btn {
+  margin:  0px 10px 0px 0px;
+  cursor: pointer;
+}
+
+</style>

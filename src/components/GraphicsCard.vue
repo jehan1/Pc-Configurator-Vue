@@ -39,12 +39,6 @@ export default {
         totalGcardQuantity: Number
     },
 
-     data(){
-        return{
-            //selectedGraphicsCard: {name: "Select the Graphics Card..."}
-        }
-    },
-
     methods:{
         handleGcardClick(gCard){
             this.$emit('handle-gcard-click',gCard)

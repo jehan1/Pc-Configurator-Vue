@@ -10,6 +10,7 @@
 </template>
 
 <script>
+
 import { config } from '../main.js';
 
 export default {
@@ -23,9 +24,8 @@ export default {
     },
     methods:{
         handleMoboClick(mobo){
-            this.currentlySelectedMotherboard = mobo
             this.$emit('handle-mobo-click',mobo);
-            config.$emit('handle-mobo-click',this.currentlySelectedMotherboard);
+            
         }
     }
 }

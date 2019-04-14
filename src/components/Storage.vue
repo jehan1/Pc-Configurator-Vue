@@ -64,7 +64,7 @@
   <style scoped>
 #storageDropdown{
 
-  margin: 10px 20px 10px 10px;
+  margin: 20px 0px 0px 0px;
   cursor: pointer;
 }
 
@@ -72,7 +72,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
   cursor: pointer;
 }
 

@@ -156,7 +156,7 @@ data(){
     totalVoltage: 0,
     totalMolex: 0,
 
-    selectedPowerSupply:{name: 'Select The Pwer Supply...'}
+    selectedPowerSupply:{name: 'Select The Power Supply...'}
   }
 },
 
@@ -177,7 +177,7 @@ methods:{
     this.mPorts = [],
     this.totalVoltage = 0,
     this.totalMolex = 0,
-    this.selectedPowerSupply ={name: 'Select The Pwer Supply...'}
+    this.selectedPowerSupply ={name: 'Select The Power Supply...'}
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -232,15 +232,11 @@ methods:{
   }, 
   handleMemClick(mem) {
     this.selectedMemory = []
-    if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory||
-        this.totalQuantity   >= this.currentlySelectedMotherboard.noMemoryPorts) {
-      alert('NO MORE NEW MEMORY ALLOWED, SIZE EXCEEDED')
-    }
-    else {
-      this.totalQuantity++;
-      this.selectedMemory.push(mem);
-      this.memory = []
-    }
+    
+    this.totalQuantity++;
+    this.selectedMemory.push(mem);
+    this.memory = []
+    
   },
   async removeSelectedMem(mem) {
     
@@ -258,7 +254,11 @@ methods:{
   increaseMemQuantity(mem) {
     if ((this.totalMem + mem.capacity) > this.currentlySelectedMotherboard.maxMemory ||
         this.totalQuantity >= this.currentlySelectedMotherboard.noMemoryPorts) {
-      alert('NO MORE MEMORY QUANTITY ALLOWED!');
+      
+        this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'No more memory allowed'});
       
     }
     else {
@@ -269,7 +269,11 @@ methods:{
   },
   decreaseMemQuantity(mem) {
     if (mem.quantity == 1) {
-      alert('QUANTITY CANNOT BE LESS THAN 1!');
+      
+      this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'QUANTITY CANNOT BE LESS THAN 1!'});
     }
     else {
       mem.quantity--;
@@ -285,7 +289,11 @@ methods:{
       });
     }
     else{
-      alert('Maximum storage drives')
+      
+      this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'Maximum storage drives'});
     }
   },
   increaseStQuantity(st){
@@ -294,12 +302,19 @@ methods:{
       st.quantity++
      }
     else{
-      alert('Maximum storage drives')
+      this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'Maximum storage drives'});
+    
     }
   },
   decreaseStQuantity(st){
     if(st.quantity ==1){
-      alert('cannot be less than 1')
+     this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'QUANTITY CANNOT BE LESS THAN 1!'});
     }
     else{
       st.quantity--
@@ -353,13 +368,19 @@ methods:{
         sMports.quantity++
       }
       else{
-        alert('Max M.2 Ports allowed')
+        this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'Maximum M.2 ports allowed'});
       }   
   },
 
   decreaseMportQuantity(sMports){
     if(sMports.quantity ==1){
-      alert('cannot be less than 1')
+      this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'QUANTITY CANNOT BE LESS THAN 1!'});
     }
     else{
       sMports.quantity--
@@ -416,14 +437,20 @@ methods:{
               this.totalGcardQuantity++;
             }
           else{
-              alert(" Quntity exceeded")
+              this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'quantity exceeded'});
             }          
         }  
     }
   },
   decreasegCardQuantity(selectedGraphicsCard){
     if (this.totalGcardQuantity == 1) {
-      alert('QUANTITY CANNOT BE LESS THAN 1!');
+      this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'QUANTITY CANNOT BE LESS THAN 1!'});
     }
     else {
       this.totalGcardQuantity--;
@@ -518,8 +545,13 @@ methods:{
             });
       }
       else{
-        alert('Cannot add more monitors, the maximum allowed quantity exceeded')
+        
+        this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'Cannot add more monitors, the maximum allowed quantity exceeded'});
       }
+
    },
    removeSelectedMon(mon) {
     this.monitors.push(mon);
@@ -566,15 +598,23 @@ methods:{
       }
     }
       else {
-        alert('Cannot add more monitors, the maximum allowed quantity exceeded')
-      }      
+            this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'Cannot add more monitors, the maximum allowed quantity exceeded'});
+      }
+
+          
 
     },
     
     decreaseMonQuantity(mon){
       if(mon.quantity == 1 ){
       
-        alert('Cannot decrease less than 1') 
+        this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'QUANTITY CANNOT BE LESS THAN 1!'}); 
       }
       else { 
         mon.quantity--;

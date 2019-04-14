@@ -29,3 +29,10 @@ export default {
 }
 </script>
 
+<style scoped>
+#powerSupplyDropdown {
+  margin: 20px 0px 0px 0px;
+  cursor: pointer;
+}
+
+</style>

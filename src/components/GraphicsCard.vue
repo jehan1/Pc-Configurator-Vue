@@ -62,14 +62,14 @@ export default {
 <style scoped>
 
 #GraphicsCardDropdown{
-  margin: 20px 0px 10px 10px;
+  margin: 20px 0px 0px 0px;
   cursor: pointer;
 }
 .selected-GraphicsCard-item {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center
+  justify-content: left;
 }
 
 #selected-GraphicsCard-name {

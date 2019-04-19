@@ -1,6 +1,6 @@
   <template>
   <div id="monitorDropdown">
-     <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null"
+     <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null && this.display == 0"
                 id="dropdown-1" text="Select Monitors..." class="m-md-2" :disabled="this.monitors.length == 0">
       <b-dropdown-item v-for="mon in monitors" v-bind:key="mon.id"
                        v-on:click="handleMonClick(mon)">
@@ -8,7 +8,7 @@
       </b-dropdown-item>
     </b-dropdown>
  
-    <b-list-group>
+    <b-list-group v-if= "this.display == 0">
       <b-list-group-item v-for="mon in selectedMonitors" v-bind:key="mon.id" >
         <div class="selected-Monitors-item">
           <p id="selected-Monitors-name">{{ mon.name }}</p>
@@ -33,6 +33,7 @@
       props:{
         monitors: Array,
         selectedMonitors: Array,
+        display: Number,
         currentlySelectedCase: Object
       },
 

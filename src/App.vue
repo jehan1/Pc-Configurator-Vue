@@ -18,7 +18,8 @@ export default {
   },
   data(){
     return{
-      finished: false
+      finished: false,
+      
     }
   }
 }

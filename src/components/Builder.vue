@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div >
+    <div id ="builder">
     <Motherboard 
     v-bind:motherboard="motherboard"
     @handle-mobo-click ="handleMoboClick"
@@ -8,6 +9,7 @@
     <Processor
      v-bind:processors="processors"
      v-bind:currentlySelectedMotherboard="currentlySelectedMotherboard"
+     v-bind:display="display"
      @handle-pro-click = "handleProcClick"
      />
    
@@ -16,6 +18,7 @@
      v-bind:selectedMemory="selectedMemory"
      v-bind:totalMem= "totalMem"
      v-bind:currentlySelectedProcessor= "currentlySelectedProcessor"
+     v-bind:display="display"
      @handle-mem-click = "handleMemClick"
      @increase-mem-quantity ="increaseMemQuantity"
      @decrease-mem-quantity="decreaseMemQuantity"
@@ -26,6 +29,7 @@
      v-bind:storage="storage"
      v-bind:selectedSt="selectedSt"
      v-bind:selectedMemory= "selectedMemory" 
+     v-bind:display="display"
      @handle-st-click = "handleStClick"
      @increase-st-quantity ="increaseStQuantity"
      @decrease-st-quantity="decreaseStQuantity"
@@ -36,6 +40,7 @@
      v-bind:mPorts="mPorts"
      v-bind:selectedMports="selectedMports"
      v-bind:selectedSt= "selectedSt"
+     v-bind:display="display"
      @handle-mport-click = "handleMportClick"
      @increase-mport-quantity ="increaseMportQuantity"
      @decrease-mport-quantity="decreaseMportQuantity"
@@ -45,6 +50,7 @@
     <Case
      v-bind:Case="Case"
      v-bind:selectedSt= "selectedSt"
+     v-bind:display="display"
      @handle-case-click = "handleCaseClick"
     />
 
@@ -53,6 +59,7 @@
      v-bind:selectedGraphicsCard="selectedGraphicsCard"
      v-bind:currentlySelectedCase= "currentlySelectedCase"
      v-bind:totalGcardQuantity= "totalGcardQuantity"
+     v-bind:display="display"
      @handle-gcard-click = "handleGcardClick"
      @increase-gcard-quantity ="increasegCardQuantity"
      @decrease-gcard-quantity="decreasegCardQuantity"
@@ -63,6 +70,7 @@
      v-bind:monitors="monitors"
      v-bind:selectedMonitors="selectedMonitors"
      v-bind:currentlySelectedCase= "currentlySelectedCase"
+     v-bind:display="display"
      @handle-mon-click = "handleMonClick"
      @increase-mon-quantity ="increaseMonQuantity"
      @decrease-mon-quantity="decreaseMonQuantity"
@@ -72,11 +80,33 @@
      v-bind:powerSpplies="powerSpplies"
      v-bind:selectedPowerSupply="selectedPowerSupply"
      v-bind:currentlySelectedCase= "currentlySelectedCase"
+     v-bind:display="display"
      @handle-power-supply-click = "handlePowerSupplyClick" 
      />
-  
-
-  
+     <Submit
+     v-bind:selectedPowerSupply="selectedPowerSupply"
+     @submit-btn = "submit" 
+     />
+     
+    </div>
+    <div>
+      <Display
+      v-bind:currentlySelectedMotherboard="currentlySelectedMotherboard"
+      v-bind:currentlySelectedProcessor="currentlySelectedProcessor"
+      v-bind:selectedMemory="selectedMemory"
+      v-bind:currentlySelectedCase="currentlySelectedCase"
+      v-bind:selectedGraphicsCard="selectedGraphicsCard"
+      v-bind:selectedSt="selectedSt"
+      v-bind:selectedMports="selectedMports"
+      v-bind:monitorId="monitorId"
+      v-bind:selectedPowerSupply="selectedPowerSupply"
+      v-bind:display="display"
+      v-bind:graphicsVideoPorts="graphicsVideoPorts"
+      v-bind:selectedMonitors="selectedMonitors"
+      v-bind:totalGcardQuantity="totalGcardQuantity"
+      
+      />
+    </div>
 </div>
 </template>
 
@@ -101,6 +131,11 @@ import Case from './Case.vue';
 import GraphicsCard from './GraphicsCard.vue';
 import Monitors from './Monitors.vue';
 import PowerSupply from './PowerSupply.vue';
+import Display from './Display.vue';
+import Submit from './Submit.vue';
+
+
+
 
 export default {
   name: 'Builder',
@@ -113,7 +148,9 @@ export default {
     Case,
     GraphicsCard,
     Monitors,
-    PowerSupply
+    PowerSupply,
+    Submit,
+    Display
   },
 
 data(){
@@ -155,8 +192,9 @@ data(){
     powerSpplies: [],
     totalVoltage: 0,
     totalMolex: 0,
+    selectedPowerSupply:{name: 'Select The Power Supply...'},
 
-    selectedPowerSupply:{name: 'Select The Power Supply...'}
+    display:0 
   }
 },
 
@@ -178,6 +216,7 @@ methods:{
     this.totalVoltage = 0,
     this.totalMolex = 0,
     this.selectedPowerSupply ={name: 'Select The Power Supply...'}
+    this.display = 0 
 
     this.currentlySelectedMotherboard = mobo;
 
@@ -623,6 +662,11 @@ methods:{
     },
     handlePowerSupplyClick(ps){
       this.selectedPowerSupply = ps;
+    },
+    submit(hh){
+      console.log(hh)
+          if (hh == 1){
+            this.display =1}
     }
   },
   async mounted() {
@@ -679,6 +723,15 @@ li {
 }
 a {
   color: #42b983;
+}
+
+#builder{
+  position: relative;
+  width: 50%;
+  float: left;
+  height: 100%;
+  z-index: 1010101010
+
 }
 
 </style>

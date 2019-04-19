@@ -1,6 +1,7 @@
 <template>
+<div id ="processor">
     <div id="processorDropdown">
-      <b-dropdown variant="outline-success" v-if="this.currentlySelectedMotherboard.id != null"
+      <b-dropdown variant="outline-success" v-if="this.currentlySelectedMotherboard.id != null && this.display == 0"
                 id="dropdown-1" :text="currentlySelectedProcessor.name" class="m-md-2">
       <b-dropdown-item v-for="proc in processors" v-bind:key="proc.id"
                        v-on:click="handleProcClick(proc)">
@@ -8,6 +9,7 @@
       </b-dropdown-item>
     </b-dropdown>
   </div>
+</div>
 </template>
 
 <script>
@@ -19,6 +21,7 @@ export default {
     
   props:{
     processors: Array,
+    display: Number,
     currentlySelectedMotherboard: Object
 
   },
@@ -40,10 +43,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+
 #processorDropdown {
   margin: 20px 0px 0px 0px;
   cursor: pointer;
+  
 }
 </style>
 

@@ -1,6 +1,7 @@
 <template>
+    <div id="memory">
     <div id="memoryDropdown">
-     <b-dropdown variant="outline-success" v-if="this.currentlySelectedProcessor.id != null"
+     <b-dropdown variant="outline-success" v-if="this.currentlySelectedProcessor.id != null && this.display == 0"
                 id="dropdown-1" text="Select Memory..." class="m-md-2" :disabled="this.memory.length == 0">
       <b-dropdown-item v-for="mem in memory" v-bind:key="mem.id"
                        v-on:click="handleMemClick(mem)">
@@ -8,11 +9,11 @@
       </b-dropdown-item>
     </b-dropdown>
 
-    <b-list-group>
+    <b-list-group v-if = "this.display == 0">
       <b-list-group-item v-for="mem in selectedMemory" v-bind:key="mem.id" >
         <div class="selected-memory-item">
           <p id="selected-memory-name">{{ mem.name }}</p>
-          <p id="selected-memory-quantity">Quantity: {{ mem.quantity }}</p>
+          <p id="selected-memory-quantity"  >Quantity: {{ mem.quantity }}</p>
           <b-button class="selected-mem-btn" @click="increaseMemQuantity(mem)" variant="success">
             <fa-icon icon="plus"></fa-icon>
           </b-button>
@@ -24,7 +25,8 @@
       </b-list-group-item>
     </b-list-group>
     
-    <p v-if="this.selectedMemory.length >= 1">Total selected memory size: {{ this.totalMem }} GB</P>
+    <p v-if="this.selectedMemory.length >= 1 && this.display == 0" >Total selected memory size: {{ this.totalMem }} GB</P>
+  </div>
   </div>
 </template>
 
@@ -39,6 +41,7 @@ export default {
         memory: Array,
         selectedMemory:Array,
         totalMem: Number,
+        display: Number,
         currentlySelectedProcessor: Object
     },
     data(){
@@ -74,6 +77,7 @@ export default {
 </script>
 
 <style scoped>
+
 #memoryDropdown{
 
   margin: 20px 0px 0px 0px;
@@ -86,11 +90,13 @@ export default {
   align-items: center;
   justify-content: left;
   cursor: pointer;
+
 }
 
 #selected-memory-name {
   vertical-align: middle;
   margin-bottom: 0
+  
 }
 
 #selected-memory-quantity {

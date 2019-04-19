@@ -1,7 +1,7 @@
 <template>
 
 <div id="storageDropdown">
-    <b-dropdown variant="outline-success" v-if="this.selectedMemory.length >= 1 "
+    <b-dropdown variant="outline-success" v-if="this.selectedMemory.length >= 1 && this.display == 0 "
                 id="dropdown-1" text="Select Storage Drive..." class="m-md-2" :disabled="this.storage.length == 0">
     <b-dropdown-item v-for="st in storage" v-bind:key="st.id"
                        v-on:click="handleStClick(st)">
@@ -12,7 +12,7 @@
     </b-dropdown-divider>
     </b-dropdown>
 
-    <b-list-group>
+    <b-list-group v-if= "this.display == 0">
       <b-list-group-item v-for="st in selectedSt" v-bind:key="st.id"  >
         <div class="selected-storage-item">
           <p id="selected-storage-name">{{ st.name }}</p>
@@ -38,6 +38,7 @@
     props:{
         storage: Array,
         selectedSt: Array,
+        display: Number,
         selectedMemory: Array
     },
 

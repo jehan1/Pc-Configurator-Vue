@@ -1,7 +1,7 @@
 <template>
 
  <div id="GraphicsCardDropdown">
-      <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null "
+      <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null && this.display == 0"
                 id="dropdown-2" :text="selectedGraphicsCard.name" class="m-md-2">
       <b-dropdown-item v-for=" gCard in graphicsCard" v-bind:key="gCard.id"
                        v-on:click="handleGcardClick(gCard)">
@@ -10,7 +10,7 @@
     </b-dropdown>
 
     <b-list-group>
-      <b-list-group-item  selectedGraphicsCard v-if="this.selectedGraphicsCard.id != null " >
+      <b-list-group-item  selectedGraphicsCard v-if="this.selectedGraphicsCard.id != null && this.display == 0" >
         <div class="selected-GraphicsCard-item">
           <p id="selected-GraphicsCard-name">{{ selectedGraphicsCard.name }}</p>
           <p id="selected-GraphicsCard-quantity">Quantity: {{ this.totalGcardQuantity }}</p>
@@ -36,6 +36,7 @@ export default {
         graphicsCard: Array,
         selectedGraphicsCard: Object,
         currentlySelectedCase: Object,
+        display: Number,
         totalGcardQuantity: Number
     },
 

@@ -1,4 +1,5 @@
 <template>
+<div id ="motherboard">
     <div>
       <b-dropdown id="dropdown-1" variant="outline-primary" :text="currentlySelectedMotherboard.name" class="m-md-2">
       <b-dropdown-item v-for="mobo in motherboard" v-bind:key="mobo.id"
@@ -7,6 +8,7 @@
       </b-dropdown-item>
       </b-dropdown>
     </div>
+</div>
 </template>
 
 <script>
@@ -34,7 +36,8 @@ export default {
 </script>
 
 <style scoped>
-#processorDropdown {
+
+#dropdown-1 {
   margin: 20px 0px 0px 0px;
   cursor: pointer;
 }

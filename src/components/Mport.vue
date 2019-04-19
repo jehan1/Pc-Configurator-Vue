@@ -1,6 +1,6 @@
 <template>
      <div id="mPortDropdown">
-     <b-dropdown variant="outline-success" v-if="this.selectedSt.length >= 1 "
+     <b-dropdown variant="outline-success" v-if="this.selectedSt.length >= 1 && this.display == 0" 
                 id="dropdown-1" text="Select M.2 Drive..." class="m-md-2" :disabled="this.mPorts.length == 0">
       <b-dropdown-item v-for="mp in mPorts" v-bind:key="mp.id"
                        v-on:click="handleMportClick(mp)">
@@ -8,7 +8,7 @@
       </b-dropdown-item>
     </b-dropdown>
   
-    <b-list-group>
+    <b-list-group v-if= "this.display == 0">
       <b-list-group-item v-for="sMports in selectedMports" v-bind:key="sMports.id" >
         <div class="selected-mPort-item">
           <p id="selected-mPort-name">{{ sMports.name }}</p>
@@ -33,6 +33,7 @@ export default {
     props:{
         mPorts: Array,
         selectedMports: Array,
+        display: Number,
         selectedSt: Array
 
     },
@@ -61,7 +62,7 @@ export default {
 <style scoped>
 #mPortDropdown{
 
-  margin: 20px 0px 0px 0px;
+  margin: 20px 0px 20px 0px;
   cursor: pointer;
 }
 

@@ -1,9 +1,9 @@
 <template>
     <div id="powerSupplyDropdown">
-     <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null"
+     <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null && this.display == 0"
                 id="dropdown-1" :text="selectedPowerSupply.name" class="m-md-2" >
       <b-dropdown-item v-for="ps in powerSpplies" v-bind:key="ps.id"
-                       v-on:click="handlePowerSupplyClick(ps)">
+                       v-on:click="handlePowerSupplyClick(ps) ">
         {{ ps.name }}
       </b-dropdown-item>
     </b-dropdown>
@@ -17,6 +17,7 @@ export default {
     props:{
         powerSpplies: Array,
         selectedPowerSupply: Object,
+        display: Number,
         currentlySelectedCase: Object
 
     },

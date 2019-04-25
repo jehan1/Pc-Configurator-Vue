@@ -2,8 +2,8 @@
 
  <div id="GraphicsCardDropdown">
       <b-dropdown variant="outline-success" v-if="this.currentlySelectedCase.id != null && this.display == 0"
-                id="dropdown-2" :text="selectedGraphicsCard.name" class="m-md-2">
-      <b-dropdown-item v-for=" gCard in graphicsCard" v-bind:key="gCard.id"
+                id="dropdown-2" :text="selectedGraphicsCard.name" class="m-md-2" :disabled="this.selectedGraphicsCard.id != null">
+      <b-dropdown-item v-for="gCard in graphicsCard" v-bind:key="gCard.id"
                        v-on:click="handleGcardClick(gCard)">
         {{ gCard.name}}
       </b-dropdown-item>

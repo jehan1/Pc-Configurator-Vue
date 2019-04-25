@@ -12,7 +12,7 @@
     </b-dropdown-divider>
     </b-dropdown>
 
-    <b-list-group v-if= "this.display == 0">
+    <b-list-group v-if="this.selectedMemory.length >= 1 && this.display == 0 ">
       <b-list-group-item v-for="st in selectedSt" v-bind:key="st.id"  >
         <div class="selected-storage-item">
           <p id="selected-storage-name">{{ st.name }}</p>

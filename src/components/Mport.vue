@@ -8,7 +8,7 @@
       </b-dropdown-item>
     </b-dropdown>
   
-    <b-list-group v-if= "this.display == 0">
+    <b-list-group v-if="this.selectedSt.length >= 1 && this.display == 0">
       <b-list-group-item v-for="sMports in selectedMports" v-bind:key="sMports.id" >
         <div class="selected-mPort-item">
           <p id="selected-mPort-name">{{ sMports.name }}</p>

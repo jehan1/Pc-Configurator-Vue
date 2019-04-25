@@ -1,12 +1,12 @@
 <template>
-      <div id="CaseDropdown">
+  <div id="CaseDropdown">
       <b-dropdown variant="outline-success" v-if=" selectedSt.length >= 1 && this.display == 0"
-                id="dropdown-1" :text="currentlySelectedCase.name" class="m-md-2">
-      <b-dropdown-item v-for=" c in Case" v-bind:key="c.id"
-                       v-on:click="handleCaseClick(c)">
-        {{ c.name}}
-      </b-dropdown-item>
-    </b-dropdown>
+           :text="currentlySelectedCase.name" class="m-md-2">
+        <b-dropdown-item v-for=" c in Case" v-bind:key="c.id"
+                        v-on:click="handleCaseClick(c)">
+          {{ c.name}}
+        </b-dropdown-item>
+      </b-dropdown>
   </div>
 </template>
 

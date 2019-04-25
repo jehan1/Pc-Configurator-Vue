@@ -9,7 +9,7 @@
       </b-dropdown-item>
     </b-dropdown>
 
-    <b-list-group v-if = "this.display == 0">
+    <b-list-group v-if ="this.display == 0">
       <b-list-group-item v-for="mem in selectedMemory" v-bind:key="mem.id" >
         <div class="selected-memory-item">
           <p id="selected-memory-name">{{ mem.name }}</p>

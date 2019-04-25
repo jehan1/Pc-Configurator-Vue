@@ -1,92 +1,92 @@
 <template>
   <div >
     <div id ="builder">
-    <Motherboard 
-    v-bind:motherboard="motherboard"
-    @handle-mobo-click ="handleMoboClick"
-    >
-    </Motherboard>
-    <Processor
-     v-bind:processors="processors"
-     v-bind:currentlySelectedMotherboard="currentlySelectedMotherboard"
-     v-bind:display="display"
-     @handle-pro-click ="handleProcClick"
-     />
-   
-    <Memory
-     v-bind:memory="memory"
-     v-bind:selectedMemory="selectedMemory"
-     v-bind:totalMem="totalMem"
-     v-bind:currentlySelectedProcessor="currentlySelectedProcessor"
-     v-bind:display="display"
-     @handle-mem-click ="handleMemClick"
-     @increase-mem-quantity ="increaseMemQuantity"
-     @decrease-mem-quantity="decreaseMemQuantity"
-     @remove-selected-mem="removeSelectedMem"
-     />
-   
-    <storage
-     v-bind:storage="storage"
-     v-bind:selectedSt="selectedSt"
-     v-bind:selectedMemory="selectedMemory" 
-     v-bind:display="display"
-     @handle-st-click ="handleStClick"
-     @increase-st-quantity ="increaseStQuantity"
-     @decrease-st-quantity="decreaseStQuantity"
-     @remove-selected-st="removeSelectedSt"
-    />
+      <Motherboard 
+      v-bind:motherboard="motherboard"
+      @handle-mobo-click ="handleMoboClick"
+      >
+      </Motherboard>
+      <Processor
+      v-bind:processors="processors"
+      v-bind:currentlySelectedMotherboard="currentlySelectedMotherboard"
+      v-bind:display="display"
+      @handle-pro-click ="handleProcClick"
+      />
+    
+      <Memory
+      v-bind:memory="memory"
+      v-bind:selectedMemory="selectedMemory"
+      v-bind:totalMem="totalMem"
+      v-bind:currentlySelectedProcessor="currentlySelectedProcessor"
+      v-bind:display="display"
+      @handle-mem-click ="handleMemClick"
+      @increase-mem-quantity ="increaseMemQuantity"
+      @decrease-mem-quantity="decreaseMemQuantity"
+      @remove-selected-mem="removeSelectedMem"
+      />
+    
+      <storage
+      v-bind:storage="storage"
+      v-bind:selectedSt="selectedSt"
+      v-bind:selectedMemory="selectedMemory" 
+      v-bind:display="display"
+      @handle-st-click ="handleStClick"
+      @increase-st-quantity ="increaseStQuantity"
+      @decrease-st-quantity="decreaseStQuantity"
+      @remove-selected-st="removeSelectedSt"
+      />
 
-    <Mport
-     v-bind:mPorts="mPorts"
-     v-bind:selectedMports="selectedMports"
-     v-bind:selectedSt="selectedSt"
-     v-bind:display="display"
-     @handle-mport-click ="handleMportClick"
-     @increase-mport-quantity ="increaseMportQuantity"
-     @decrease-mport-quantity="decreaseMportQuantity"
-     @remove-selected-mport="removeSelectedMport"    
-    />
+      <Mport
+      v-bind:mPorts="mPorts"
+      v-bind:selectedMports="selectedMports"
+      v-bind:selectedSt="selectedSt"
+      v-bind:display="display"
+      @handle-mport-click ="handleMportClick"
+      @increase-mport-quantity ="increaseMportQuantity"
+      @decrease-mport-quantity="decreaseMportQuantity"
+      @remove-selected-mport="removeSelectedMport"    
+      />
 
-    <Case
-     v-bind:Case="Case"
-     v-bind:selectedSt="selectedSt"
-     v-bind:display="display"
-     @handle-case-click ="handleCaseClick"
-    />
+      <Case
+      v-bind:Case="Case"
+      v-bind:selectedSt="selectedSt"
+      v-bind:display="display"
+      @handle-case-click ="handleCaseClick"
+      />
 
-    <GraphicsCard
-     v-bind:graphicsCard="graphicsCard"
-     v-bind:selectedGraphicsCard="selectedGraphicsCard"
-     v-bind:currentlySelectedCase="currentlySelectedCase"
-     v-bind:totalGcardQuantity="totalGcardQuantity"
-     v-bind:display="display"
-     @handle-gcard-click ="handleGcardClick"
-     @increase-gcard-quantity ="increasegCardQuantity"
-     @decrease-gcard-quantity="decreasegCardQuantity"
-     @remove-selected-gcard="removeSelectedgCard"  
-    />
+      <GraphicsCard
+      v-bind:graphicsCard="graphicsCard"
+      v-bind:selectedGraphicsCard="selectedGraphicsCard"
+      v-bind:currentlySelectedCase="currentlySelectedCase"
+      v-bind:totalGcardQuantity="totalGcardQuantity"
+      v-bind:display="display"
+      @handle-gcard-click ="handleGcardClick"
+      @increase-gcard-quantity ="increasegCardQuantity"
+      @decrease-gcard-quantity="decreasegCardQuantity"
+      @remove-selected-gcard="removeSelectedgCard"  
+      />
 
-    <Monitors
-     v-bind:monitors="monitors"
-     v-bind:selectedMonitors="selectedMonitors"
-     v-bind:currentlySelectedCase="currentlySelectedCase"
-     v-bind:display="display"
-     @handle-mon-click ="handleMonClick"
-     @increase-mon-quantity ="increaseMonQuantity"
-     @decrease-mon-quantity="decreaseMonQuantity"
-     @remove-selected-mon="removeSelectedMon"
-    />
-     <PowerSupply
-     v-bind:powerSpplies="powerSpplies"
-     v-bind:selectedPowerSupply="selectedPowerSupply"
-     v-bind:currentlySelectedCase="currentlySelectedCase"
-     v-bind:display="display"
-     @handle-power-supply-click ="handlePowerSupplyClick" 
-     />
-     <Submit
-     v-bind:selectedPowerSupply="selectedPowerSupply"
-     @submit-btn ="submit" 
-     />
+      <Monitors
+      v-bind:monitors="monitors"
+      v-bind:selectedMonitors="selectedMonitors"
+      v-bind:currentlySelectedCase="currentlySelectedCase"
+      v-bind:display="display"
+      @handle-mon-click ="handleMonClick"
+      @increase-mon-quantity ="increaseMonQuantity"
+      @decrease-mon-quantity="decreaseMonQuantity"
+      @remove-selected-mon="removeSelectedMon"
+      />
+      <PowerSupply
+      v-bind:powerSpplies="powerSpplies"
+      v-bind:selectedPowerSupply="selectedPowerSupply"
+      v-bind:currentlySelectedCase="currentlySelectedCase"
+      v-bind:display="display"
+      @handle-power-supply-click ="handlePowerSupplyClick" 
+      />
+      <Submit
+      v-bind:selectedPowerSupply="selectedPowerSupply"
+      @submit-btn = "submit" 
+      />
      
     </div>
     <div>
@@ -103,11 +103,9 @@
       v-bind:display="display"
       v-bind:graphicsVideoPorts="graphicsVideoPorts"
       v-bind:selectedMonitors="selectedMonitors"
-      v-bind:totalGcardQuantity="totalGcardQuantity"
-      
-      />
+      v-bind:totalGcardQuantity="totalGcardQuantity"/>
     </div>
-</div>
+  </div>
 </template>
 
 <script>

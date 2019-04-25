@@ -24,11 +24,11 @@
           <p id="heading"  >Case: </p>
           <p id="componenets" >{{ currentlySelectedCase.name }}</p>
           
-          <p id="heading" v-if = "graphicsVideoPorts.length >= 1" >Graphics Card: </p>
-          <p id="componenets" v-if = "graphicsVideoPorts.length >= 1" >
+          <p id="heading" v-if ="graphicsVideoPorts.length >= 1" >Graphics Card: </p>
+          <p id="componenets" v-if ="graphicsVideoPorts.length >= 1" >
               {{totalGcardQuantity}} X {{ selectedGraphicsCard.name }}</p>
         
-          <p id="heading" v-if = "monitorId.length >= 1" > Monitors : </p>
+          <p id="heading" v-if ="monitorId.length >= 1" > Monitors : </p>
           <p id="componenets" v-for="st in selectedMonitors" v-bind:key="st.id" >
               {{st.quantity}} X  {{ st.name }}</p>
         

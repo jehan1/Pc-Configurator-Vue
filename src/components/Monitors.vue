@@ -8,7 +8,7 @@
       </b-dropdown-item>
     </b-dropdown>
  
-    <b-list-group v-if= "this.display == 0">
+    <b-list-group v-if="this.display == 0">
       <b-list-group-item v-for="mon in selectedMonitors" v-bind:key="mon.id" >
         <div class="selected-Monitors-item">
           <p id="selected-Monitors-name">{{ mon.name }}</p>

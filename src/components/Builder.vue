@@ -11,8 +11,8 @@
       v-bind:currentlySelectedMotherboard="currentlySelectedMotherboard"
       v-bind:display="display"
       @handle-pro-click ="handleProcClick"
-      />
-    
+      >
+      </Processor>
       <Memory
       v-bind:memory="memory"
       v-bind:selectedMemory="selectedMemory"
@@ -446,6 +446,7 @@ methods:{
     this.totalGcardQuantity++;
     this.selectedGraphicsCard = gCard;
     this.powerSpplies=[]
+    this.selectedPowerSupply = {name: 'Select The Power Supply...'}
   
     this.getGraphicsCardMonitors();
     this.totalVoltage = parseInt(this.totalVoltage) + parseInt(this.selectedGraphicsCard.voltage)
@@ -472,6 +473,8 @@ methods:{
           temp[i].id.pciLaneId){
             if(this.totalGcardQuantity < temp[i].quantity){
               this.totalGcardQuantity++;
+              this.totalVoltage = parseInt(this.totalVoltage) + parseInt(this.selectedGraphicsCard.voltage)
+              this.totalMolex = parseInt(this.totalMolex) + parseInt(this.selectedGraphicsCard.molexConnectors.id)
             }
           else{
               this.$notify({
@@ -491,10 +494,19 @@ methods:{
     }
     else {
       this.totalGcardQuantity--;
+      this.totalVoltage = parseInt(this.totalVoltage) - parseInt(this.selectedGraphicsCard.voltage)
+      this.totalMolex = parseInt(this.totalMolex) - parseInt(this.selectedGraphicsCard.molexConnectors.id)
     }
   },
   removeSelectedgCard(selectedGraphicsCard){
+    this.totalVoltage = parseInt(this.totalVoltage) - parseInt(this.selectedGraphicsCard.voltage)
+    this.totalMolex = parseInt(this.totalMolex) - parseInt(this.selectedGraphicsCard.molexConnectors.id)
+
     this.selectedGraphicsCard = { name: 'Select The Graphics Card...' }
+    this.selectedMonitors = []
+    this.selectedPowerSupply = {name: 'Select The Power Supply...'}
+   
+
   },
 
   async getGraphicsCardMonitors(){

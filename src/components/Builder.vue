@@ -85,11 +85,11 @@
       />
       <Submit
       v-bind:selectedPowerSupply="selectedPowerSupply"
-      @submit-btn = "submit" 
+      @submit-btn ="submit" 
       />
      
     </div>
-    <div>
+    <div  >
       <Display
       v-bind:currentlySelectedMotherboard="currentlySelectedMotherboard"
       v-bind:currentlySelectedProcessor="currentlySelectedProcessor"
@@ -707,29 +707,17 @@ methods:{
 
 </script>
 
-<style  scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<style >
 
 #builder{
   position: relative;
   width: 50%;
   float: left;
   height: 100%;
-  z-index: 1010101010
-
+  z-index: 1010101010;
+  overflow: auto;
+  min-height: 90vh;
+  max-height: 90vh;
 }
 
 </style>

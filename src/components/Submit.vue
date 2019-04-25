@@ -37,11 +37,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style >
 
 #submitButton{
     margin: 20px 0px 0px 0px;
-    position: fixed;
+    
+     
 }
 
 

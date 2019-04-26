@@ -100,10 +100,8 @@
       v-bind:selectedGraphicsCard="selectedGraphicsCard"
       v-bind:selectedSt="selectedSt"
       v-bind:selectedMports="selectedMports"
-      v-bind:monitorId="monitorId"
       v-bind:selectedPowerSupply="selectedPowerSupply"
       v-bind:display="display"
-      v-bind:graphicsVideoPorts="graphicsVideoPorts"
       v-bind:selectedMonitors="selectedMonitors"
       v-bind:totalGcardQuantity="totalGcardQuantity"/>
     </div>

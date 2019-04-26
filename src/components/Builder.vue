@@ -3,7 +3,6 @@
     <div id ="builder">
       <Motherboard 
       v-bind:motherboard="motherboard"
-      
       @handle-mobo-click ="handleMoboClick"
       >
       </Motherboard>
@@ -53,6 +52,7 @@
       v-bind:Case="Case"
       v-bind:selectedSt="selectedSt"
       v-bind:display="display"
+      v-bind:currentlySelectedCase="currentlySelectedCase"
       @handle-case-click ="handleCaseClick"
       />
 

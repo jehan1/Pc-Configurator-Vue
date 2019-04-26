@@ -17,7 +17,9 @@ import { config } from '../main.js';
 
 export default {
     name: 'Motherboard',
-    props: ["motherboard"],
+    props: {
+        motherboard: Array,
+    },
 
     data(){
         return{

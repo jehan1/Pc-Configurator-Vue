@@ -3,12 +3,14 @@
     <div id ="builder">
       <Motherboard 
       v-bind:motherboard="motherboard"
+      
       @handle-mobo-click ="handleMoboClick"
       >
       </Motherboard>
       <Processor
       v-bind:processors="processors"
       v-bind:currentlySelectedMotherboard="currentlySelectedMotherboard"
+      v-bind:currentlySelectedProcessor="currentlySelectedProcessor"
       v-bind:display="display"
       @handle-pro-click ="handleProcClick"
       >
@@ -505,7 +507,7 @@ methods:{
     this.selectedGraphicsCard = { name: 'Select The Graphics Card...' }
     this.selectedMonitors = []
     this.selectedPowerSupply = {name: 'Select The Power Supply...'}
-   
+    this.getOnBoardMonitors();
 
   },
 

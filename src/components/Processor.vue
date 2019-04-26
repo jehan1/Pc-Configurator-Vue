@@ -2,7 +2,7 @@
 <div id ="processor">
     <div id="processorDropdown">
       <b-dropdown variant="outline-success" v-if="this.currentlySelectedMotherboard.id != null && this.display == 0"
-                id="dropdown-1" :text="currentlySelectedProcessor.name" class="m-md-2">
+                id="dropdown-1" :text="processor.name" class="m-md-2">
       <b-dropdown-item v-for="proc in processors" v-bind:key="proc.id"
                        v-on:click="handleProcClick(proc)">
         {{ proc.name }}
@@ -22,24 +22,30 @@ export default {
   props:{
     processors: Array,
     display: Number,
-    currentlySelectedMotherboard: Object
+    currentlySelectedMotherboard: Object,
+    currentlySelectedProcessor: Object
 
   },
- 
-  data(){
-    return {
-      currentlySelectedProcessor: { name: 'Select processor...' },
 
-      }
-    },
-      
-    methods:{
-      handleProcClick(proc){
-        this.currentlySelectedProcessor = proc
-        this.$emit('handle-pro-click',proc);
- 
-      }
+  methods:{
+    handleProcClick(proc){
+      this.processor = proc
+      this.$emit('handle-pro-click',proc);
+
     }
+  },
+  computed:{
+    processor:{
+      get: function(){
+      var pr = this.currentlySelectedProcessor
+      return pr
+      },
+      set: function(currentlySelectedProcessor){
+        var pr = currentlySelectedProcessor;
+      }
+      
+    }
+  }
 }
 </script>
 

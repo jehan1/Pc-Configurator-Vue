@@ -188,7 +188,7 @@ data(){
     totalMonitors: 0,
 
     powerSpplies: [],
-    totalVoltage: 0,
+    totalVoltage: 100,
     totalMolex: 0,
     selectedPowerSupply:{name: 'Select The Power Supply...'},
 
@@ -211,7 +211,7 @@ methods:{
     this.selectedMports = []
     this.mPortId = [],
     this.mPorts = [],
-    this.totalVoltage = 0,
+    this.totalVoltage = 100,
     this.totalMolex = 0,
     this.selectedPowerSupply ={name: 'Select The Power Supply...'}
     this.display = 0 
@@ -264,7 +264,7 @@ methods:{
   },
   async handleProcClick(proc){
     this.currentlySelectedProcessor = proc;
-    this.totalVoltage = this.currentlySelectedProcessor.voltage
+    this.totalVoltage += this.currentlySelectedProcessor.voltage
     this.powerSpplies = await PowerSApi.getPowerSupplies(this.totalMolex,this.totalVoltage);
   }, 
   handleMemClick(mem) {
@@ -684,7 +684,10 @@ methods:{
       this.motherboard = await MotherboardsApi.getAllMotherboards();
     }
     catch (error) {
-      console.log('server-down');
+      this.$notify({
+        group: 'error',
+        type: 'warn',
+        text: 'Server Down'}); 
     }
 
   },
